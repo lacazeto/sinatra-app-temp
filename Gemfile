@@ -1,0 +1,5 @@
+source 'https://rubygems.org'
+gem 'bundler', '1.16.1'
+gem 'sinatra', '2.0.1'
+gem 'sequel', '5.6.0'
+gem 'slim', '3.0.9'
