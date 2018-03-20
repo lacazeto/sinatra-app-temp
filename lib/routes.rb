@@ -1,3 +1,11 @@
+require 'slim'
+
+before do
+     if not request.path_info.split('/')[1] == 'login' and session[:user_id].nil?
+     	redirect '/login'
+     end
+end
+
 get '/?' do 
      @all_lists =  List.all 
 
