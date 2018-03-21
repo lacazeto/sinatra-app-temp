@@ -1,5 +1,6 @@
 require 'sinatra'
 require 'sequel'
+require 'slim'
 
 
 class Todo < Sinatra::Base
