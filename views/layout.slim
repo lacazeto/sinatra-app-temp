@@ -2,8 +2,12 @@ doctype html
 html
   head
     title ToDo
-    link rel="stylesheet" href="/css/style.css"
     link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"
+    css:
+      .has-below {
+        padding-bottom: 20px;
+      }
+
   body
     .container-fluid
       .col-md-12
@@ -12,12 +16,12 @@ html
             .navbar-inner
               .container-fluid
                 .navbar-header
-                  button.navbar-toggle data="toggle=collapse"
+                  button.navbar-toggle data-toggle="collapse"
                     span.icon-bar
                     span.icon-bar
                     span.icon-bar
-                    a.navbar-brand href=url("/")
-                         i.glyphicon.glyphicon-home Home
+                  a.navbar-brand href=url("/")
+                    i.glyphicon.glyphicon-home Home
 
           .has-below
           .has-below

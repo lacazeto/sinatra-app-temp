@@ -1,7 +1,10 @@
-require 'slim'
+require 'digest'
+require 'digest/md5'
 
 # before do
-#      if not request.path_info.split('/')[1] == 'login' and session[:user_id].nil?
+#      binding.pry
+#      if !['login', 'signup'].include?(request.path_info.split('/')[1]) && session[:user_id].nil?
+#       puts 'not working' if session[:user_id].nil? 
 #      	redirect '/login'
 #      end
 # end
@@ -86,35 +89,37 @@ post '/permission/?' do
 end
 
 get '/signup/?' do 
-     if session[:user_id].nil?
+      if session[:user_id].nil?
           slim :'/signup'
  	else
           slim :'error' #, locals: {error: 'Please log out first'}
-     end
+      end
 end 
      
 post '/signup/?' do 
-     md5sum = Digest::Md5.hexdigest params[:password]
-     User.create(name: params[:name], password: md5sum) 
+     md5sum = Digest::MD5.hexdigest params[:password]
+     User.create(name: params[:name], password: md5sum)
+     redirect '/'
 end
 
 get '/login/?' do 
-     if session[:user_id].nil?
+      if session[:user_id].nil?
           slim :'/login'
-     else
+      else
           slim :'error' #, locals: {error: 'Please log out first'}
-     end
+      end
 end 
      
 post '/login/?' do 
-     md5sum = Digest::Md5.hexdigest params[:password]
+     md5sum = Digest::MD5.hexdigest params[:password]
      user = User.first(name: params[:name], password: md5sum)
-     if user.nil?
-     	slim :'error' # locals: {error: 'Invalid login credentials'}
-	else
-     	session[:user_id] = user.id
-     	redirect '/'
-     end
+      if user.nil?
+     	      slim :'error' # locals: {error: 'Invalid login credentials'}
+      else
+           session[:user_id] = user.id
+           puts session[:user_id]
+           redirect '/'
+      end
 end
 
 get '/logout/?' do
