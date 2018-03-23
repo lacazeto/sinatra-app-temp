@@ -1,10 +1,6 @@
 require 'sinatra'
-require 'sequel'
-require 'slim'
-require 'yaml'
-require 'digest'
-require 'digest/md5'
 require 'bundler/setup'
+require './lib/routes'
 
 Bundler.require
 
