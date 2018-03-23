@@ -1,18 +1,16 @@
-require 'digest'
-require 'digest/md5'
+require 'sinatra'
 
-# before do
-#      binding.pry
-#      if !['login', 'signup'].include?(request.path_info.split('/')[1]) && session[:user_id].nil?
-#       puts 'not working' if session[:user_id].nil? 
-#      	redirect '/login'
-#      end
-# end
+before do
+      next unless request.get?
+      if !['login', 'signup'].include?(request.path_info.split('/')[1]) and session[:user_id].nil?
+            redirect '/login'
+      end
+end
 
 get '/?' do 
-     @all_lists =  List.all 
-
-     slim :'/index'
+      user = User.first(id: session[:user_id])
+      # all_lists = List.association_join(:permissions).where(user_id: user.id)
+      slim :'/index'
 end
 
 get '/new/?' do 
@@ -20,9 +18,9 @@ get '/new/?' do
 end
 
 post '/new/?' do 
-     user = User.first(name: session[:user_id])
-     List.new_list params[:title], params[:items], user
-     redirect request.referer
+      user = User.first(id: session[:user_id])
+      list = List.new_list params[:name], params[:items], user
+      redirect "/"
 end
 
 get '/edit/:id/?' do 
@@ -99,6 +97,7 @@ end
 post '/signup/?' do 
      md5sum = Digest::MD5.hexdigest params[:password]
      User.create(name: params[:name], password: md5sum)
+     session[:user_id] = user.id
      redirect '/'
 end
 
@@ -110,15 +109,14 @@ get '/login/?' do
       end
 end 
      
-post '/login/?' do 
-     md5sum = Digest::MD5.hexdigest params[:password]
-     user = User.first(name: params[:name], password: md5sum)
+post '/login/?' do
+      md5sum = Digest::MD5.hexdigest params[:password]
+      user = User.first(name: params[:name], password: md5sum)
       if user.nil?
-     	      slim :'error' # locals: {error: 'Invalid login credentials'}
+            slim :'error' # locals: {error: 'Invalid login credentials'}
       else
-           session[:user_id] = user.id
-           puts session[:user_id]
-           redirect '/'
+            session[:user_id] = user.id
+            redirect '/'
       end
 end
 
