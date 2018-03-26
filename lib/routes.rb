@@ -1,4 +1,5 @@
 require 'sinatra'
+require 'pry'
 
 before do
       next unless request.get?
@@ -9,8 +10,8 @@ end
 
 get '/?' do 
       user = User.first(id: session[:user_id])
-      # all_lists = List.association_join(:permissions).where(user_id: user.id)
-      slim :'/index'
+      all_lists = List.association_join(:permissions).where(user_id: user.id)
+      slim :'/index', locals: {user: user, all_lists: all_lists}
 end
 
 get '/new/?' do 

@@ -10,7 +10,7 @@
             label.control-label.col-md-4 for="name" 
                span List Name
             .col-md-8
-              input.form-control{type="text" name="name"
+              input.form-control type="text" name="name"
           hr
           .form-group.item-group
             .col-md-4
@@ -18,26 +18,24 @@
             .col-md-8
               textarea.form-control type="text" name="items[][description]" placeholder="Item description"
           #items_list.form-group
-            a href='javascript=oid(0)' id='add-item' class='col-md-3'
-               spn Add Item
+            a href='#' id='add-item' class='col-md-3' Add Item
           hr
           .form-group
             .col-md-2.col-md-offset-3
               button.btn.btn-sm.btn-primary type="submit"
                 i.glyphicon.glyphicon-ok
-                Create
+                span Create
   
-  script {type="text/template" id='item_template'}
-    .form-group.item-group
-      .col-md-4
-        input.form-control {type="text" name="items[][name]" placeholder="Item name"}
-      .col-md-8
-        textarea.form-control {type="text" name="items[][description]" placeholder="Item description"}
+    script type="text/template" id='item_template'
+      .form-group.item-group
+        .col-md-4
+          input.form-control type="text" name="items[][name]" placeholder="Item name"
+        .col-md-8
+          textarea.form-control type="text" name="items[][description]" placeholder="Item description"
 
-  javascript
-    $(document).on('click', '#add-item', function(){
-      var template_text = $('#item_template').html()
-      $('#items_list').before(template_text);
-  });
+    javascript:
+      $('#add-item').on('click', function(){
+          var template_text = $('#item_template').html()
+          $('#items_list').before(template_text);
+      });
         
-  script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"
