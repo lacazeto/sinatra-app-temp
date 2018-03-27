@@ -8,7 +8,7 @@ class List < Sequel::Model
      one_to_many :logs 
 
      def self.new_list name, items, user
-          list = List.create(name: name, created_at: Time.now)
+          list = List.create(name: name, created_at: Time.now, updated_at: Time.now)
           items.each do |item|
                Item.create(name: item[:name], description: item[:description], list: list, user: user, created_at: Time.now, updated_at: Time.now)
           end
@@ -24,10 +24,10 @@ class List < Sequel::Model
           
           items.each do |item|
                if item[:deleted]
-                    i = Item.first(item[:id]).destroy
+                    i = Item.first(id: item[:id]).destroy
                     next
                end
-               i = Item.first(item[:id])
+               i = Item.first(id: item[:id])
                if i.nil?
                     Item.create(name: item[:name], description: item[:description], list: list, user: user, created_at: Time.now, updated_at: Time.now)
                else
