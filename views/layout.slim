@@ -10,6 +10,9 @@ html
       span, i {
         font-size: 1.2em;
       }
+      nav > * {
+        height: 100%;
+      }
       .has-below {
         padding-bottom: 20px;
       }
@@ -38,7 +41,7 @@ html
     .container-fluid
       .col-md-12
         .row
-          nav.navbar.navbar-inverse.navbar-fixed-top role="navigation" style="height: 65px"
+          nav.navbar.navbar-inverse.navbar-fixed-top role="navigation" style="height: 60px"
             .navbar-inner
               .container-fluid
                 .navbar-header
@@ -46,13 +49,14 @@ html
                     span.icon-bar 
                     span.icon-bar
                     span.icon-bar
-                  a.navbar-brand href=url("/")
-                    i.glyphicon.glyphicon-home style="font-size: 30px"
+                  a.navbar-brand href=url("/") style="line-height: 0px"
+                    i.glyphicon.glyphicon-home
                     span Home
-                .collapse.navbar-collapse.navbar-right id="navbar-collapse-1"
-                  a.navbar-brand href=url("/logout")
-                    i.glyphicon.glyphicon-share style="font-size: 30px"
-                    span Log Out
+                - unless @is_not_logged    
+                  .collapse.navbar-collapse.navbar-right id="navbar-collapse-1" style="line-height: 0px"
+                    a.navbar-brand href=url("/logout")
+                      i.glyphicon.glyphicon-share
+                      span Log Out
           .has-below
           .has-below
           .has-below

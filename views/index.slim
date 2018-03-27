@@ -1,24 +1,29 @@
 css:
-     a {
-          padding: 0;
-     }
-
-/ h1 Welcome #{@user.name.capitalize}!
+    a {
+      padding: 0;
+    }
+    .wrap {
+      margin: 0 auto;
+      width: 60vw;
+    }
 
 .has-below
 .wrap
   .welcome-txt
-    h1 Welcome #{user.name.capitalize}!
-  .listing
-    table.listings_table
-     thead
-       tr
-          th.listings_table Name
-     tbody
-     - all_lists.each do |list|
-       tr
-          td.listings_table #{list.name}
-    end
+    h1 Welcome #{@user.name.capitalize}!
+
+    .has-below
+    
+    .listing
+      table.listings_table
+        thead
+          tr
+            th.listings_table My Lists
+        tbody
+        - @all_lists.each do |list|
+          tr
+            td.listings_table #{list.name}
+      end
 
   .right-listing
     ul
