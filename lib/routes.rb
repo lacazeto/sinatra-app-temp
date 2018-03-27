@@ -1,17 +1,22 @@
 require 'sinatra'
 require 'pry'
 
+@is_not_logged = true
+
 before do
       next unless request.get?
       if !['login', 'signup'].include?(request.path_info.split('/')[1]) and session[:user_id].nil?
+            @is_not_logged = session[:user_id].nil?
             redirect '/login'
+      else
+            @is_not_logged = session[:user_id].nil?
       end
 end
 
 get '/?' do 
-      user = User.first(id: session[:user_id])
-      all_lists = List.association_join(:permissions).where(user_id: user.id)
-      slim :'/index', locals: {user: user, all_lists: all_lists}
+      @user = User.first(id: session[:user_id])
+      @all_lists = List.association_join(:permissions).where(user_id: @user.id)
+      slim :'/index'
 end
 
 get '/new/?' do 
