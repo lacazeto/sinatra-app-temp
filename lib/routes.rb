@@ -30,19 +30,20 @@ post '/new/?' do
 end
 
 get '/edit/:id/?' do 
-     list = List.first(id: params[:id])
+     @list = List.first(id: params[:id])
      can_edit = true
-     if list.nil?
+     if @list.nil?
           can_edit = false
-     elsif list.shared_with == 'public'
+     elsif @list.shared_with == 'public'
           user = User.first(id: session[:user_id])
-          permission = Permission.first(list: list, user: user)
+          permission = Permission.first(list: @list, user: user)
           if permission.nil? or permission.permission_level == 'read_only'
                can_edit = false
           end
      end
 
      if can_edit
+          @items = Item.where(list_id: params[:id])
           slim :'/edit_list'
      else
           halt 403, 'Invalid permissions'
@@ -50,14 +51,14 @@ get '/edit/:id/?' do
      end
 end
 
-post '/edit/?' do
+post '/edit/:id' do
      user = User.first(id: session[:user_id])
      List.edit_list params[:id], params[:name], params[:items], user
-     redirect request.referer
+     redirect '/'
 end
 
 post '/permission/?' do 
-     user = User.first(id: session[:user_id])
+      user = User.first(id: session[:user_id])
     	list = List.first(id: params[:id])
     	can_change_permission = true
     	
@@ -90,6 +91,16 @@ post '/permission/?' do
           halt 403, 'Invalid permissions'
     	     # haml :error, locals: {error: 'Invalid permissions'}
     	end
+end
+
+get '/delete/:id/?' do
+      list = List.first(id: params[:id])
+      items = Item.where(list_id: params[:id])
+      permission = Permission.first(list_id: params[:id])
+      permission.destroy
+      items.each {|item| item.destroy}
+      list.destroy
+      redirect '/'
 end
 
 get '/signup/?' do 
