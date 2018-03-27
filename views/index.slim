@@ -1,10 +1,24 @@
 css:
     a {
       padding: 0;
-    }
+      }
     .wrap {
       margin: 0 auto;
       width: 60vw;
+    }
+    button {
+      margin: 5px;
+    }
+    thead {
+      border-bottom: 1px solid;
+      font-size: 1.2em;
+    }
+    table {
+      width: 100%
+    }
+    tr {
+      display: flex;
+      justify-content: space-between;
     }
 
 .has-below
@@ -22,7 +36,13 @@ css:
         tbody
         - @all_lists.each do |list|
           tr
-            td.listings_table #{list.name}
+            td.listings_table #{list.name.capitalize}
+            td.listings_table
+              a href=url("/edit/#{list.id}") 
+                button.btn.btn-info.btn-xs type="button" Edit
+              a href=url("/delete/#{list.id}") 
+                button.btn.btn-danger.btn-xs type="button" Delete
+
       end
 
   .right-listing
