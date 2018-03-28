@@ -106,14 +106,16 @@ end
 get '/signup/?' do 
       if session[:user_id].nil?
           slim :'/signup'
- 	else
-          slim :'error' #, locals: {error: 'Please log out first'}
+       else
+          @message = "Please log out first"
+          slim :'error'
       end
 end 
      
 post '/signup/?' do 
      md5sum = Digest::MD5.hexdigest params[:password]
      User.create(name: params[:name], password: md5sum)
+     user = User.first(name: params[:name], password: md5sum)
      session[:user_id] = user.id
      redirect '/'
 end
@@ -138,6 +140,7 @@ post '/login/?' do
 end
 
 get '/logout/?' do
-	session[:user_id] = nil
+      session[:user_id] = nil
+      # session.clear
 	redirect '/login'
 end
