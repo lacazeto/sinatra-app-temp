@@ -11,6 +11,10 @@ class Todo < Sinatra::Application
      configure do
           set :environment, :development # ENV['RACK_ENV']
           register Sinatra::Reloader
+          enable :reloader
+          after_reload do
+               puts 'Reloaded'
+          end
 
           # CONNECT TO DB
           env = ENV['RACK_ENV'] || 'development'
