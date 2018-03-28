@@ -1,4 +1,5 @@
 require 'sinatra'
+require 'date'
 require 'pry'
 require 'byebug'
 
@@ -21,12 +22,12 @@ get '/?' do
 end
 
 get '/new/?' do 
-     slim :'/new_list'
+      @time = (DateTime.now).to_s.gsub!(/T\d{2}.*/,'')
+      slim :'/new_list'
 end
 
 post '/new/?' do 
       user = User.first(id: session[:user_id])
-      binding.pry
       list = List.new_list params[:name], params[:items], user
       redirect "/"
 end

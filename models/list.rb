@@ -10,9 +10,11 @@ class List < Sequel::Model
      def self.new_list name, items, user
           list = List.create(name: name, created_at: Time.now, updated_at: Time.now)
           items.each do |item|
-               item[:starred] = false if item[:starred] == nil
-               Item.create(name: item[:name], description: item[:description], starred: item[:starred],
-                    list: list, user: user, created_at: Time.now, updated_at: Time.now)
+               unless item[:name].empty?
+                    item[:starred] = false if item[:starred] == nil
+                    Item.create(name: item[:name], description: item[:description], starred: item[:starred],
+                         list: list, user: user, created_at: Time.now, updated_at: Time.now)
+               end
           end
           Permission.create(list: list, user: user, permission_level: 'read_write', created_at: Time.now, updated_at: Time.now)
           return list
