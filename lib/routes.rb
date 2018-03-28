@@ -1,5 +1,6 @@
 require 'sinatra'
 require 'pry'
+require 'byebug'
 
 @is_not_logged = true
 
@@ -25,6 +26,7 @@ end
 
 post '/new/?' do 
       user = User.first(id: session[:user_id])
+      binding.pry
       list = List.new_list params[:name], params[:items], user
       redirect "/"
 end
@@ -43,7 +45,7 @@ get '/edit/:id/?' do
      end
 
      if can_edit
-          @items = Item.where(list_id: params[:id])
+          @items = Item.where(list_id: params[:id]).order(Sequel.desc(:starred))
           slim :'/edit_list'
      else
           halt 403, 'Invalid permissions'
