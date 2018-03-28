@@ -10,7 +10,9 @@ class List < Sequel::Model
      def self.new_list name, items, user
           list = List.create(name: name, created_at: Time.now, updated_at: Time.now)
           items.each do |item|
-               Item.create(name: item[:name], description: item[:description], list: list, user: user, created_at: Time.now, updated_at: Time.now)
+               item[:starred] = false if item[:starred] == nil
+               Item.create(name: item[:name], description: item[:description], starred: item[:starred],
+                    list: list, user: user, created_at: Time.now, updated_at: Time.now)
           end
           Permission.create(list: list, user: user, permission_level: 'read_write', created_at: Time.now, updated_at: Time.now)
           return list
@@ -23,18 +25,25 @@ class List < Sequel::Model
           list.save
           
           items.each do |item|
-               if item[:deleted]
-                    i = Item.first(id: item[:id]).destroy
+               if item[:name].empty?
+                    begin
+                         i = Item.first(id: item[:id]).destroy
+                    rescue
+                         puts "inexistent item"
+                    end
                     next
-               end
-               i = Item.first(id: item[:id])
-               if i.nil?
-                    Item.create(name: item[:name], description: item[:description], list: list, user: user, created_at: Time.now, updated_at: Time.now)
                else
-                    i.name = item[:name]
-                    i.description = item[:description]
-                    i.updated_at = Time.now
-                    i.save
+                    item[:starred] = false if item[:starred].nil?
+                    i = Item.first(id: item[:id])
+                    if i.nil?
+                         Item.create(name: item[:name], description: item[:description], starred: item[:starred], list: list, user: user, created_at: Time.now, updated_at: Time.now)
+                    else  
+                         i.name = item[:name]
+                         i.description = item[:description]
+                         i.updated_at = Time.now
+                         i.starred = item[:starred]
+                         i.save
+                    end
                end
           end
      end

@@ -1,4 +1,12 @@
- .col-md-8.col-md-offset-2
+css:
+    div > .check {
+      margin-right: 5px;
+    }
+    .colorful {
+      border-color: orange;
+    }
+
+.col-md-8.col-md-offset-2
     .has-below
     .panel.panel-primary
       .panel-heading
@@ -14,14 +22,36 @@
           - @items.each do |item|
             hr
             .form-group.item-group
-              .col-md-4
-                input.form-control type="text" name="items[][name]" value="#{item.name}"
+              - if item.starred == true
+                .col-md-4 style="display: flex"
+                  input.checkbox.check type="checkbox" name="items[][starred]" checked="#{item.starred}"
+                  input.form-control.colorful type="text" name="items[][name]" value="#{item.name}"
+              - else 
+                .col-md-4 style="display: flex"
+                  input.checkbox.check type="checkbox" name="items[][starred]"
+                  input.form-control type="text" name="items[][name]" value="#{item.name}"
               .col-md-8
                 textarea.form-control type="text" name="items[][description]" #{item.description}
                 input.form-control type="text" name="items[][id]" value="#{item.id}" style="display: none"
+          #items_list.form-group
+            a href='#' id='add-item' class='col-md-3' Add Item
           hr
           .form-group
             .col-md-2.col-md-offset-3
               button.btn.btn-sm.btn-primary type="submit"
                 i.glyphicon.glyphicon-ok
                 span Update
+
+    script type="text/template" id='item_template'
+      .form-group.item-group
+        .col-md-4 style="display: flex"
+          input.checkbox.check type="checkbox" name="items[][starred]"
+          input.form-control type="text" name="items[][name]" placeholder="Item name"
+        .col-md-8
+          textarea.form-control type="text" name="items[][description]" placeholder="Item description"
+
+    javascript:
+      $('#add-item').on('click', function(){
+          var template_text = $('#item_template').html()
+          $('#items_list').before(template_text);
+      });
