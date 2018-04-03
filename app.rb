@@ -12,6 +12,8 @@ class Todo < Sinatra::Application
           set :environment, :development # ENV['RACK_ENV']
           register Sinatra::Reloader
           enable :reloader
+          also_reload 'lib/*.rb'
+          also_reload 'models/*.rb'
           after_reload do
                puts 'Reloaded'
           end
