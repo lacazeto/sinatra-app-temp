@@ -8,27 +8,24 @@ require 'byebug'
 before do
       next unless request.get?
       if !['login', 'signup'].include?(request.path_info.split('/')[1]) and session[:user_id].nil?
-            @is_not_logged = session[:user_id].nil?
             redirect '/login'
-      else
-            @is_not_logged = session[:user_id].nil?
       end
+      @user = User.first(id: session[:user_id]) if session[:user_id]
 end
 
 get '/?' do 
-      @user = User.first(id: session[:user_id])
       @all_lists = List.association_join(:permissions).where(user_id: @user.id)
       slim :'/index'
 end
 
 get '/new/?' do 
-      @time = (DateTime.now).to_s.gsub!(/T\d{2}.*/,'')
+      @time = (DateTime.now).to_s.gsub!(/T\d{2}.*/,'') #check for strftime method
       slim :'/new_list'
 end
 
 post '/new/?' do 
-      user = User.first(id: session[:user_id])
-      list = List.new_list params[:name], params[:items], user
+      list = List.new_list params[:name], params[:items], @user
+      binding.pry
       redirect "/"
 end
 
@@ -39,14 +36,16 @@ get '/edit/:id/?' do
           can_edit = false
      elsif @list.shared_with == 'public'
           user = User.first(id: session[:user_id])
-          permission = Permission.first(list: @list, user: user)
+          permission = Permission.first(list: @list, user: @user)
           if permission.nil? or permission.permission_level == 'read_only'
                can_edit = false
           end
      end
 
      if can_edit
+          @time = (DateTime.now).to_s.gsub!(/T\d{2}.*/,'') 
           @items = Item.where(list_id: params[:id]).order(Sequel.desc(:starred))
+          
           slim :'/edit_list'
      else
           halt 403, 'Invalid permissions'
@@ -55,20 +54,19 @@ get '/edit/:id/?' do
 end
 
 post '/edit/:id' do
-     user = User.first(id: session[:user_id])
-     List.edit_list params[:id], params[:name], params[:items], user
+     List.edit_list params[:id], params[:name], params[:items], @user
+     binding.pry
      redirect '/'
 end
 
 post '/permission/?' do 
-      user = User.first(id: session[:user_id])
     	list = List.first(id: params[:id])
     	can_change_permission = true
     	
     	if list.nil?
     	     can_change_permission = false
     	elsif list.shared_with != 'public'
-          permission = Permission.first(list: list, user: user)
+          permission = Permission.first(list: list, user: @user)
     	     if permission.nil? or permission.permission_level == 'read_only'
     	          can_change_permission = false
     	     end
