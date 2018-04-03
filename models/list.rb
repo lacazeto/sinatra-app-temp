@@ -13,7 +13,7 @@ class List < Sequel::Model
                unless item[:name].empty?
                     item[:starred] = false if item[:starred] == nil
                     Item.create(name: item[:name], description: item[:description], starred: item[:starred],
-                         list: list, user: user, created_at: Time.now, updated_at: Time.now)
+                         list: list, user: user, due_date: item[:due_date], created_at: Time.now, updated_at: Time.now)
                end
           end
           Permission.create(list: list, user: user, permission_level: 'read_write', created_at: Time.now, updated_at: Time.now)
