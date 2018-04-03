@@ -5,6 +5,16 @@ css:
     .colorful {
       border-color: orange;
     }
+    #date {
+      padding: 0px;
+    }
+    input[type="checkbox"]
+    { 
+      vertical-align: middle;
+    }
+    input, textarea {
+      margin-bottom: 10px;
+    }
 
 .col-md-8.col-md-offset-2
     .has-below
@@ -22,16 +32,17 @@ css:
           - @items.each do |item|
             hr
             .form-group.item-group
-              - if item.starred == true
-                .col-md-4 style="display: flex"
-                  input.checkbox.check type="checkbox" name="items[][starred]" checked="#{item.starred}"
-                  input.form-control.colorful type="text" name="items[][name]" value="#{item.name}"
-              - else 
-                .col-md-4 style="display: flex"
-                  input.checkbox.check type="checkbox" name="items[][starred]"
-                  input.form-control type="text" name="items[][name]" value="#{item.name}"
-              .col-md-8
+              .col-md-4
+                input.form-control type="text" name="items[][name]" value="#{item.name}"
+                span#date Due Date:
+                input.form-control type="date" name="items[][due_date]"  min="#{@time}" value="#{item.due_date}"
+              .col-md-8 
                 textarea.form-control type="text" name="items[][description]" #{item.description}
+                - if item.starred == true
+                  input.check#checkbox  type="checkbox" name="items[][starred]" checked=true
+                - else 
+                  input.checkbox.check type="checkbox" name="items[][starred]" checked=false
+                label for="checkbox" Mark as important
                 input.form-control type="text" name="items[][id]" value="#{item.id}" style="display: none"
           #items_list.form-group
             a href='#' id='add-item' class='col-md-3' Add Item
@@ -43,12 +54,16 @@ css:
                 span Update
 
     script type="text/template" id='item_template'
+      hr
       .form-group.item-group
-        .col-md-4 style="display: flex"
-          input.checkbox.check type="checkbox" name="items[][starred]"
+        .col-md-4
           input.form-control type="text" name="items[][name]" placeholder="Item name"
-        .col-md-8
+          span#date Due Date:
+          input.form-control type="date" name="items[][due_date]"  min="#{@time}"
+        .col-md-8 
           textarea.form-control type="text" name="items[][description]" placeholder="Item description"
+          input.checkbox.check type="checkbox" name="items[][starred]" checked=false
+          label for="checkbox" Mark as important
 
     javascript:
       $('#add-item').on('click', function(){
