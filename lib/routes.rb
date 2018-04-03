@@ -6,7 +6,6 @@ require 'byebug'
 @is_not_logged = true
 
 before do
-      next unless request.get?
       if !['login', 'signup'].include?(request.path_info.split('/')[1]) and session[:user_id].nil?
             redirect '/login'
       end
@@ -19,13 +18,13 @@ get '/?' do
 end
 
 get '/new/?' do 
-      @time = (DateTime.now).to_s.gsub!(/T\d{2}.*/,'') #check for strftime method
+      # @time = (DateTime.now).to_s.gsub!(/T\d{2}.*/,'') #check for strftime method
+      @time = (DateTime.now).strftime("%F")
       slim :'/new_list'
 end
 
 post '/new/?' do 
       list = List.new_list params[:name], params[:items], @user
-      binding.pry
       redirect "/"
 end
 
@@ -43,9 +42,8 @@ get '/edit/:id/?' do
      end
 
      if can_edit
-          @time = (DateTime.now).to_s.gsub!(/T\d{2}.*/,'') 
+          @time = (DateTime.now).strftime("%F")
           @items = Item.where(list_id: params[:id]).order(Sequel.desc(:starred))
-          
           slim :'/edit_list'
      else
           halt 403, 'Invalid permissions'
@@ -55,7 +53,6 @@ end
 
 post '/edit/:id' do
      List.edit_list params[:id], params[:name], params[:items], @user
-     binding.pry
      redirect '/'
 end
 
@@ -125,6 +122,7 @@ get '/login/?' do
       if session[:user_id].nil?
           slim :'/login'
       else
+          @message = "Please log out first"
           slim :'error' #, locals: {error: 'Please log out first'}
       end
 end 
@@ -133,7 +131,8 @@ post '/login/?' do
       md5sum = Digest::MD5.hexdigest params[:password]
       user = User.first(name: params[:name], password: md5sum)
       if user.nil?
-            slim :'error' # locals: {error: 'Invalid login credentials'}
+            @message = "Invalid login credentials"
+            slim :'error'
       else
             session[:user_id] = user.id
             redirect '/'
@@ -142,6 +141,6 @@ end
 
 get '/logout/?' do
       session[:user_id] = nil
-      # session.clear
+      # session.clear can also be used
 	redirect '/login'
 end

@@ -35,13 +35,13 @@ css:
               .col-md-4
                 input.form-control type="text" name="items[][name]" value="#{item.name}"
                 span#date Due Date:
-                input.form-control type="date" name="items[][due_date]"  min="#{@time}" value="#{item.due_date}"
+                input.form-control type="date" name="items[][due_date]"  min="#{@time}" value="#{item[:due_date].to_s.gsub!(/\s\S+/,'')}"
               .col-md-8 
                 textarea.form-control type="text" name="items[][description]" #{item.description}
                 - if item.starred == true
                   input.check#checkbox  type="checkbox" name="items[][starred]" checked=true
                 - else 
-                  input.checkbox.check type="checkbox" name="items[][starred]" checked=false
+                  input.check#checkbox type="checkbox" name="items[][starred]" checked=false
                 label for="checkbox" Mark as important
                 input.form-control type="text" name="items[][id]" value="#{item.id}" style="display: none"
           #items_list.form-group
@@ -62,7 +62,7 @@ css:
           input.form-control type="date" name="items[][due_date]"  min="#{@time}"
         .col-md-8 
           textarea.form-control type="text" name="items[][description]" placeholder="Item description"
-          input.checkbox.check type="checkbox" name="items[][starred]" checked=false
+          input.check#checkbox type="checkbox" name="items[][starred]" checked=false style="vertical-align: middle"
           label for="checkbox" Mark as important
 
     javascript:
