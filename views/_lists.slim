@@ -1,0 +1,13 @@
+table.listings_table
+        thead
+          tr
+            th.listings_table My Lists
+        tbody
+        - @all_lists.each do |list|
+          tr
+            td.listings_table #{list.name.capitalize}
+            td.listings_table
+              a href=url("/edit/#{list.id}") 
+                button.btn.btn-info.btn-xs type="button" View
+              a href=url("/delete/#{list.id}") 
+                button.btn.btn-danger.btn-xs type="button" Delete
