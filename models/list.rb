@@ -5,7 +5,16 @@ class List < Sequel::Model
      
      one_to_many :items 
      one_to_many :permissions 
-     one_to_many :logs 
+     one_to_many :logs
+     one_to_many :comments
+
+     def before_destroy
+          #comments.each(&:destroy)
+          items.each(&:destroy)
+          permissions.each(&:destroy)
+          logs.each(&:destroy)
+          super
+     end
 
      def self.new_list name, items, user
           list = List.create(name: name, created_at: Time.now, updated_at: Time.now)
@@ -38,22 +47,17 @@ class List < Sequel::Model
                     item[:starred] = false if item[:starred].nil?
                     i = Item.first(id: item[:id])
                     if i.nil?
-                         Item.create(name: item[:name], description: item[:description], starred: item[:starred], list: list, user: user, created_at: Time.now, updated_at: Time.now)
+                         Item.create(name: item[:name], description: item[:description],starred: item[:starred], list: list,
+                              due_date: item[:due_date], user: user, created_at: Time.now, updated_at: Time.now)
                     else  
                          i.name = item[:name]
                          i.description = item[:description]
                          i.updated_at = Time.now
                          i.starred = item[:starred]
+                         i.due_date = item[:due_date]
                          i.save
                     end
                end
           end
      end
-end
-
-class Item < Sequel::Model
-     set_primary_key :id 
-     	 
-     many_to_one :user 
-     many_to_one :list 
 end
