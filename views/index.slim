@@ -4,7 +4,10 @@ css:
       }
     .wrap {
       margin: 0 auto;
-      width: 60vw;
+      max-width: 560px;
+    }
+    ul {
+      padding: 0 15px;
     }
     button {
       margin: 5px;
@@ -20,18 +23,28 @@ css:
       display: flex;
       justify-content: space-between;
     }
+    .right-listing {
+      padding: 0;
+    }
 
 .has-below
 .wrap
-  .welcome-txt
+  .welcome-txt.col-md-8
     h1 Welcome #{@user.name.capitalize}!
 
     .has-below
     
-    .listing
-      == slim :'/_lists'
+    .my-listing
+      == slim :'/_lists', locals: {list_Name: @list_names[0]}
 
-  .right-listing
+    .has-below
+    .has-below
+    .has-below
+      == slim :'/_lists', locals: {list_Name: @list_names[1]}
+
+    .others-listing
+
+  .right-listing.col-md-4
     ul
      li 
      li
