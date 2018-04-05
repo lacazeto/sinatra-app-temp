@@ -13,7 +13,9 @@ before do
 end
 
 get '/?' do 
-      @all_lists = List.association_join(:permissions).where(user_id: @user.id)
+      @my_lists = List.association_join(:permissions).where(user_id: @user.id)
+      @others_lists = List.association_join(:permissions).exclude(user_id: @user.id)
+      @list_names = ["My Lists", "Others Lists"]
       slim :'/index'
 end
 
@@ -93,10 +95,10 @@ end
 
 get '/delete/:id/?' do
       list = List.first(id: params[:id])
-      items = Item.where(list_id: params[:id])
-      permission = Permission.first(list_id: params[:id])
-      permission.destroy
-      items.each {|item| item.destroy}
+      # items = Item.where(list_id: params[:id])
+      # permission = Permission.first(list_id: params[:id])
+      # permission.destroy
+      # items.each {|item| item.destroy}
       list.destroy
       redirect '/'
 end
