@@ -38,7 +38,7 @@ css:
                 input.form-control type="date" name="items[][due_date]"  min="#{@time}" value="#{item[:due_date].to_s.gsub!(/\s\S+/,'')}"
               .col-md-8 
                 textarea.form-control type="text" name="items[][description]" #{item.description}
-                - if item.starred == true
+                - if item.starred
                   input.check#checkbox  type="checkbox" name="items[][starred]" checked=true
                 - else 
                   input.check#checkbox type="checkbox" name="items[][starred]" checked=false
