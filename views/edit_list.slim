@@ -16,63 +16,106 @@ css:
       margin-bottom: 10px;
     }
 
-.col-md-8.col-md-offset-2
-    .has-below
-    .panel.panel-primary
-      .panel-heading
-        h3.panel-title 
-          span Edit List
-      .panel-body
-        form.form-horizontal name="list" method="post" action=url("/edit/#{@list.id}")
-          .form-group
-            label.control-label.col-md-4 for="list_name" 
-               span List Name
-            .col-md-8
-              input.form-control type="text" name="list_name" value="#{@list.list_name}"
-          - @items.each do |item|
+- if can_edit == true
+  .col-md-8.col-md-offset-2
+      .has-below
+      .panel.panel-primary
+        .panel-heading
+          h3.panel-title 
+            span Edit List
+        .panel-body
+          form.form-horizontal name="list" method="post" action=url("/edit/#{@list.id}")
+            .form-group
+              label.control-label.col-md-4 for="list_name" 
+                span List Name
+              .col-md-8
+                input.form-control type="text" name="list_name" value="#{@list.list_name}"
+            - @items.each do |item|
+              hr
+              .form-group.item-group
+                .col-md-4
+                  input.form-control type="text" name="items[][name]" value="#{item.name}"
+                  span#date Due Date:
+                  input.form-control type="date" name="items[][due_date]"  min="#{@time}" value="#{item[:due_date].to_s.gsub!(/\s\S+/,'')}"
+                .col-md-8 
+                  textarea.form-control type="text" name="items[][description]" #{item.description}
+                  - if item.starred
+                    input.check#checkbox1  type="checkbox" name="items[][starred]" checked=true
+                  - else 
+                    input.check#checkbox1 type="checkbox" name="items[][starred]" checked=false
+                  label for="checkbox1" Mark as important
+                  input.form-control type="text" name="items[][id]" value="#{item.id}" style="display: none"
+            #items_list.form-group
+              a href='#' id='add-item' class='col-md-3' Add Item
             hr
-            .form-group.item-group
-              .col-md-4
-                input.form-control type="text" name="items[][name]" value="#{item.name}"
-                span#date Due Date:
-                input.form-control type="date" name="items[][due_date]"  min="#{@time}" value="#{item[:due_date].to_s.gsub!(/\s\S+/,'')}"
-              .col-md-8 
-                textarea.form-control type="text" name="items[][description]" #{item.description}
-                - if item.starred
-                  input.check#checkbox1  type="checkbox" name="items[][starred]" checked=true
-                - else 
-                  input.check#checkbox1 type="checkbox" name="items[][starred]" checked=false
-                label for="checkbox1" Mark as important
-                input.form-control type="text" name="items[][id]" value="#{item.id}" style="display: none"
-          #items_list.form-group
-            a href='#' id='add-item' class='col-md-3' Add Item
-          hr
-          .form-group style="display: flex"
-            .col-md-2.col-md-offset-3
-              button.btn.btn-sm.btn-primary type="submit"
-                i.glyphicon.glyphicon-ok
-                span Update
-            .col-md-8.text-right
-              label for="checkbox2" style="margin-right: 5px; color: red" Make it public
-              - if @list[:shared_with] == 'public'
-                input.check#checkbox2 type="checkbox" name="shared_with" checked=true
-              - else
-                input.check#checkbox2 type="checkbox" name="shared_with" checked=false
+            .form-group style="display: flex"
+              .col-md-2.col-md-offset-3
+                button.btn.btn-sm.btn-primary type="submit"
+                  i.glyphicon.glyphicon-ok
+                  span Update
+              .col-md-8.text-right
+                label for="checkbox2" style="margin-right: 5px; color: red" Make it public
+                - if @list[:shared_with] == 'public'
+                  input.check#checkbox2 type="checkbox" name="shared_with" checked=true
+                - else
+                  input.check#checkbox2 type="checkbox" name="shared_with" checked=false
 
-    script type="text/template" id='item_template'
-      hr
-      .form-group.item-group
-        .col-md-4
-          input.form-control type="text" name="items[][name]" placeholder="Item name"
-          span#date Due Date:
-          input.form-control type="date" name="items[][due_date]"  min="#{@time}"
-        .col-md-8 
-          textarea.form-control type="text" name="items[][description]" placeholder="Item description"
-          input.check#checkbox type="checkbox" name="items[][starred]" checked=false style="vertical-align: middle"
-          label for="checkbox" Mark as important
+      script type="text/template" id='item_template'
+        hr
+        .form-group.item-group
+          .col-md-4
+            input.form-control type="text" name="items[][name]" placeholder="Item name"
+            span#date Due Date:
+            input.form-control type="date" name="items[][due_date]"  min="#{@time}"
+          .col-md-8 
+            textarea.form-control type="text" name="items[][description]" placeholder="Item description"
+            input.check#checkbox type="checkbox" name="items[][starred]" checked=false style="vertical-align: middle"
+            label for="checkbox" Mark as important
 
-    javascript:
-      $('#add-item').on('click', function(){
-          var template_text = $('#item_template').html()
-          $('#items_list').before(template_text);
-      });
+      javascript:
+        $('#add-item').on('click', function(){
+            var template_text = $('#item_template').html()
+            $('#items_list').before(template_text);
+        });
+
+- else
+  .col-md-8.col-md-offset-2
+      .has-below
+      .panel.panel-primary
+        .panel-heading
+          h3.panel-title 
+            span View List
+        .panel-body
+          form.form-horizontal name="list" method="post" action=url("/edit/#{@list.id}")
+            .form-group
+              label.control-label.col-md-4 for="list_name" 
+                span List Name
+              .col-md-8
+                input.form-control type="text" name="list_name" value="#{@list.list_name}" readonly="true"
+            - @items.each do |item|
+              hr
+              .form-group.item-group
+                .col-md-4
+                  input.form-control type="text" name="items[][name]" value="#{item.name}" readonly="true"
+                  span#date Due Date:
+                  input.form-control type="date" name="items[][due_date]"  min="#{@time}" value="#{item[:due_date].to_s.gsub!(/\s\S+/,'')}" readonly="true"
+                .col-md-8 
+                  textarea.form-control type="text" name="items[][description]" disabled="true" #{item.description} 
+                  - if item.starred
+                    input.check#checkbox1  type="checkbox" name="items[][starred]" checked=true onclick="return false"
+                  - else 
+                    input.check#checkbox1 type="checkbox" name="items[][starred]" checked=false onclick="return false"
+                  label for="checkbox1" Mark as important
+                  input.form-control type="text" name="items[][id]" value="#{item.id}" style="display: none" readonly="true"
+            hr
+            .form-group style="display: flex"
+              .col-md-2.col-md-offset-3
+                button.btn.btn-sm.btn-primary type="submit"
+                  i.glyphicon.glyphicon-ok
+                  span Update
+              .col-md-8.text-right
+                label for="checkbox2" style="margin-right: 5px; color: red" Make it public
+                - if @list[:shared_with] == 'public'
+                  input.check#checkbox2 type="checkbox" name="shared_with" checked=true onclick="return false"
+                - else
+                  input.check#checkbox2 type="checkbox" name="shared_with" checked=false onclick="return false"

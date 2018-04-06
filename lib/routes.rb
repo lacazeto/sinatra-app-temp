@@ -32,9 +32,10 @@ end
 
 get '/edit/:id/?' do 
      @list = List.first(id: params[:id])
+     can_view = true
      can_edit = true
      if @list.nil?
-            can_edit = false
+            can_view = false
      elsif @list.shared_with == 'public'
             user = User.first(id: session[:user_id])
             permission = Permission.first(list: @list, user: @user)
@@ -43,13 +44,14 @@ get '/edit/:id/?' do
             end
      end
 
-     if can_edit
+     if can_view
             @time = (DateTime.now).strftime("%F")
             @items = Item.where(list_id: params[:id]).order(Sequel.desc(:starred))
-            slim :'/edit_list'
+            slim :'/edit_list', :locals => {:can_edit => can_edit}
+
      else
             @message = 'Invalid permissions'
-            halt 403
+            slim :'/error'
      end
 end
 
@@ -100,8 +102,14 @@ get '/delete/:id/?' do
       # permission = Permission.first(list_id: params[:id])
       # permission.destroy
       # items.each {|item| item.destroy}
-      list.destroy
-      redirect '/'
+      permission = Permission.first(list: list, user: @user)
+      if permission.nil? or permission.permission_level == 'read_only'
+            @message = 'Invalid permissions. You are not allowed to delete this.'
+            slim :'error'
+      else
+            list.destroy
+            redirect '/'
+      end
 end
 
 get '/signup/?' do 
