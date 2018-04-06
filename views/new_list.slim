@@ -34,16 +34,19 @@ css:
             input.form-control type="date" name="items[][due_date]" min="#{@time}"
           .col-md-8
             textarea.form-control type="text" name="items[][description]" placeholder="Item description"
-            input.check#checkbox  type="checkbox" name="items[][starred]" 
-            label for="checkbox" Mark as important
+            input.check#checkbox1  type="checkbox" name="items[][starred]" 
+            label for="checkbox1" Mark as important
         #items_list.form-group
           a href='#' id='add-item' class='col-md-3' Add Item
         hr
-        .form-group
+        .form-group style="display: flex"
           .col-md-2.col-md-offset-3
             button.btn.btn-sm.btn-primary type="submit"
               i.glyphicon.glyphicon-ok
               span Create
+          .col-md-8.text-right
+            label for="checkbox2" style="margin-right: 5px; color: red" Make it public
+            input.check#checkbox2 type="checkbox" name="shared_with" 
 
   script type="text/template" id='item_template'
     hr

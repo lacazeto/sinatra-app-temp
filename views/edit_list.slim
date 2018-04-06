@@ -39,19 +39,25 @@ css:
               .col-md-8 
                 textarea.form-control type="text" name="items[][description]" #{item.description}
                 - if item.starred
-                  input.check#checkbox  type="checkbox" name="items[][starred]" checked=true
+                  input.check#checkbox1  type="checkbox" name="items[][starred]" checked=true
                 - else 
-                  input.check#checkbox type="checkbox" name="items[][starred]" checked=false
-                label for="checkbox" Mark as important
+                  input.check#checkbox1 type="checkbox" name="items[][starred]" checked=false
+                label for="checkbox1" Mark as important
                 input.form-control type="text" name="items[][id]" value="#{item.id}" style="display: none"
           #items_list.form-group
             a href='#' id='add-item' class='col-md-3' Add Item
           hr
-          .form-group
+          .form-group style="display: flex"
             .col-md-2.col-md-offset-3
               button.btn.btn-sm.btn-primary type="submit"
                 i.glyphicon.glyphicon-ok
                 span Update
+            .col-md-8.text-right
+              label for="checkbox2" style="margin-right: 5px; color: red" Make it public
+              - if @list[:shared_with] == 'public'
+                input.check#checkbox2 type="checkbox" name="shared_with" checked=true
+              - else
+                input.check#checkbox2 type="checkbox" name="shared_with" checked=false
 
     script type="text/template" id='item_template'
       hr
