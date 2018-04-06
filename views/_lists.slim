@@ -26,8 +26,8 @@ table.listings_table
               tr
                 td.listings_table
                   p 
-                    |- 
-                    span style="padding: 0" #{list[:name].capitalize} 
+                    span style="padding: 0" 
+                      u #{list[:name].capitalize} 
                     |- #{list.list_name.capitalize}
                 td.listings_table
                   a href=url("/edit/#{list.id}") 
