@@ -26,7 +26,7 @@ get '/new/?' do
 end
 
 post '/new/?' do 
-      list = List.new_list params[:name], params[:items], @user
+      list = List.new_list params[:name], params[:items], params[:shared_with], @user
       redirect "/"
 end
 
@@ -34,27 +34,27 @@ get '/edit/:id/?' do
      @list = List.first(id: params[:id])
      can_edit = true
      if @list.nil?
-          can_edit = false
+            can_edit = false
      elsif @list.shared_with == 'public'
-          user = User.first(id: session[:user_id])
-          permission = Permission.first(list: @list, user: @user)
-          if permission.nil? or permission.permission_level == 'read_only'
-               can_edit = false
-          end
+            user = User.first(id: session[:user_id])
+            permission = Permission.first(list: @list, user: @user)
+            if permission.nil? or permission.permission_level == 'read_only'
+                  can_edit = false
+            end
      end
 
      if can_edit
-          @time = (DateTime.now).strftime("%F")
-          @items = Item.where(list_id: params[:id]).order(Sequel.desc(:starred))
-          slim :'/edit_list'
+            @time = (DateTime.now).strftime("%F")
+            @items = Item.where(list_id: params[:id]).order(Sequel.desc(:starred))
+            slim :'/edit_list'
      else
-          halt 403, 'Invalid permissions'
-          # haml :error, locals: {error: 'Invalid permissions'}
+            @message = 'Invalid permissions'
+            halt 403
      end
 end
 
 post '/edit/:id' do
-     List.edit_list params[:id], params[:name], params[:items], @user
+     List.edit_list params[:id], params[:name], params[:shared_with], params[:items], @user
      redirect '/'
 end
 
@@ -72,24 +72,25 @@ post '/permission/?' do
     	end
     	
     	if can_change_permission
-          list.permission = params[:new_permissions]
-          list.save
+            list.permission = params[:new_permissions]
+            list.save
 
-          current_permissions = Permission.first(list: list)
-          current_permissions.each do |perm|
-               perm.destroy
-          end
+            current_permissions = Permission.first(list: list)
+            current_permissions.each do |perm|
+                  perm.destroy
+            end
     	
-          if params[:new_permissions] == 'private' or parms[:new_permissions] == 'shared'
+            if params[:new_permissions] == 'private' or parms[:new_permissions] == 'shared'
                user_perms.each do |perm|
                     u = User.first(perm[:user])
-                    Permission.create(list: list, user: u, permission_level: perm[:level], created_at: Time.now, updated_at: Time.now)
+                    Permission.create(list: list, user: u, permission_level: perm[:level], created_at: Time.now,
+                        updated_at: Time.now)
                end
-    	     end
-    	     redirect request.referer
+    	      end
+    	      redirect request.referer
      else
-          halt 403, 'Invalid permissions'
-    	     # haml :error, locals: {error: 'Invalid permissions'}
+            @message = 'Invalid permissions'
+            halt 403 
     	end
 end
 
@@ -113,11 +114,17 @@ get '/signup/?' do
 end 
      
 post '/signup/?' do 
-     md5sum = Digest::MD5.hexdigest params[:password]
-     User.create(name: params[:name], password: md5sum)
-     user = User.first(name: params[:name], password: md5sum)
-     session[:user_id] = user.id
-     redirect '/'
+      check = User.first(name: params[:name])
+      if check.nil?
+            md5sum = Digest::MD5.hexdigest params[:password]
+            User.create(name: params[:name], password: md5sum)
+            user = User.first(name: params[:name], password: md5sum)
+            session[:user_id] = user.id
+            redirect '/'
+      else
+            @message = "This Username already exists"
+            slim :'error'
+      end 
 end
 
 get '/login/?' do 
@@ -125,7 +132,7 @@ get '/login/?' do
           slim :'/login'
       else
           @message = "Please log out first"
-          slim :'error' #, locals: {error: 'Please log out first'}
+          slim :'error'
       end
 end 
      
