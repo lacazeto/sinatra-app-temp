@@ -35,12 +35,12 @@ css:
     .has-below
     
     .my-listing
-      == slim :'/_lists', locals: {list_Name: @list_names[0]}
+      == slim :'/_lists', locals: {list_type: @list_types[0]}
 
     .has-below
     .has-below
     .has-below
-      == slim :'/_lists', locals: {list_Name: @list_names[1]}
+      == slim :'/_lists', locals: {list_type: @list_types[1]}
 
     .others-listing
 

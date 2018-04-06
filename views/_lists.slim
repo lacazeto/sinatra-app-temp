@@ -1,12 +1,18 @@
+css:
+  p {
+    margin: 10px 0;
+  }
+
 table.listings_table
         thead
           tr
-            th.listings_table #{list_Name}
+            th.listings_table #{list_type}
         tbody
-        - if list_Name == "My Lists"
+        - if list_type == "My Lists"
           - @my_lists.each do |list|
             tr
-              td.listings_table #{list.name.capitalize}
+              td.listings_table 
+                p -#{list.list_name.capitalize}
               td.listings_table
                 a href=url("/edit/#{list.id}") 
                   button.btn.btn-info.btn-xs type="button" View
@@ -16,8 +22,13 @@ table.listings_table
                   button.btn.btn-danger.btn-xs type="button" Delete
         - else
           - @others_lists.each do |list|
+            - if list.shared_with == "public"
               tr
-                td.listings_table #{list.name.capitalize}
+                td.listings_table
+                  p 
+                    |- 
+                    span style="padding: 0" #{list[:name].capitalize} 
+                    |- #{list.list_name.capitalize}
                 td.listings_table
                   a href=url("/edit/#{list.id}") 
                     button.btn.btn-info.btn-xs type="button" View

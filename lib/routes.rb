@@ -14,8 +14,8 @@ end
 
 get '/?' do 
       @my_lists = List.association_join(:permissions).where(user_id: @user.id)
-      @others_lists = List.association_join(:permissions).exclude(user_id: @user.id)
-      @list_names = ["My Lists", "Others Lists"]
+      @others_lists = List.association_join(:permissions => :user).exclude(user_id: @user.id)
+      @list_types = ["My Lists", "Others Lists"]
       slim :'/index'
 end
 
@@ -26,7 +26,7 @@ get '/new/?' do
 end
 
 post '/new/?' do 
-      list = List.new_list params[:name], params[:items], params[:shared_with], @user
+      list = List.new_list params[:list_name], params[:items], params[:shared_with], @user
       redirect "/"
 end
 
@@ -54,7 +54,7 @@ get '/edit/:id/?' do
 end
 
 post '/edit/:id' do
-     List.edit_list params[:id], params[:name], params[:shared_with], params[:items], @user
+     List.edit_list params[:id], params[:list_name], params[:shared_with], params[:items], @user
      redirect '/'
 end
 

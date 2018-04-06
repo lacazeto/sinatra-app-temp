@@ -3,8 +3,8 @@ require 'sequel'
 class List < Sequel::Model 
      set_primary_key :id 
      
-     one_to_many :items 
-     one_to_many :permissions 
+     one_to_many :items
+     one_to_many :permissions
      one_to_many :logs
      one_to_many :comments
 
@@ -16,8 +16,9 @@ class List < Sequel::Model
           super
      end
 
-     def self.new_list name, items, user
-          list = List.create(name: name, created_at: Time.now, updated_at: Time.now)
+     def self.new_list name, items, shared_with, user
+          shared_with == nil ? shared_with = 'private' : shared_with = 'public'
+          list = List.create(list_name: name, created_at: Time.now, updated_at: Time.now, shared_with: shared_with)
           items.each do |item|
                unless item[:name].empty?
                     item[:starred] = false if item[:starred] == nil
@@ -29,10 +30,12 @@ class List < Sequel::Model
           return list
      end
 
-     def self.edit_list id, name, items, user
+     def self.edit_list id, name, shared_with, items, user
+          shared_with == nil ? shared_with = 'private' : shared_with = 'public'
           list = List.first(id: id)
-          list.name = name
+          list.list_name = name
           list.updated_at = Time.now
+          list.shared_with = shared_with
           list.save
           
           items.each do |item|

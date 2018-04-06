@@ -25,10 +25,10 @@ css:
       .panel-body
         form.form-horizontal name="list" method="post" action=url("/edit/#{@list.id}")
           .form-group
-            label.control-label.col-md-4 for="name" 
+            label.control-label.col-md-4 for="list_name" 
                span List Name
             .col-md-8
-              input.form-control type="text" name="name" value="#{@list.name}"
+              input.form-control type="text" name="list_name" value="#{@list.list_name}"
           - @items.each do |item|
             hr
             .form-group.item-group
