@@ -14,6 +14,11 @@ GEM
     rack (2.0.4)
     rack-protection (2.0.1)
       rack
+    rack-test (1.0.0)
+      rack (>= 1.0, < 3)
+    racksh (1.0.0)
+      rack (>= 1.0)
+      rack-test (>= 0.5)
     sequel (5.6.0)
     sinatra (2.0.1)
       mustermann (~> 1.0)
@@ -38,9 +43,10 @@ PLATFORMS
 
 DEPENDENCIES
   bundler
-  byebug
+  byebug (= 10.0.1)
   mysql2
   pry
+  racksh
   sequel
   sinatra
   sinatra-contrib

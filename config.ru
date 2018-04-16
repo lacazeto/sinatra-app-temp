@@ -1,6 +1,4 @@
-require 'sinatra'
 require 'bundler/setup'
-require './lib/routes'
 
 # check gems installed
 Bundler.require

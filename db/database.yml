@@ -1,6 +1,6 @@
 development:
   adapter: 'mysql2'
-  host: 'mysql.getapp.docker'
+  host: 'localhost'
   database: 'todo'
   user: 'root'
-  password: 'pass'
+  password: ''
