@@ -34,21 +34,18 @@ class Todo < Sinatra::Application
   end
 
   post '/login/?' do
-    md5sum = Digest::MD5.hexdigest params[:password]
-    user = User.first(name: params[:name], password: md5sum)
+    user = User.find_by_login(params[:name], params[:password])
     if user.nil?
       @message = 'Invalid login credentials'
       slim :'error'
     else
       session[:user_id] = user.id
-      @is_not_logged = false
       redirect '/'
     end
   end
 
   get '/logout/?' do
     session[:user_id] = nil
-    @is_not_logged = true
     # session.clear can also be used
     redirect '/login'
   end

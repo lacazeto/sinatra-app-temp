@@ -58,7 +58,7 @@ html
                   a.navbar-brand href=url("/") style="line-height: 0px"
                     i.glyphicon.glyphicon-home
                     span Home
-                - unless @is_not_logged    
+                - if @user    
                   .collapse.navbar-collapse.navbar-right id="navbar-collapse-1" style="line-height: 0px"
                     a.navbar-brand href=url("/logout")
                       i.glyphicon.glyphicon-share

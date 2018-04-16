@@ -4,24 +4,22 @@ require 'pry'
 require 'byebug'
 
 class Todo < Sinatra::Application
-      @is_not_logged = true
-
       get '/?' do
             @my_lists = List.association_join(:permissions).where(user_id: @user.id)
             @others_lists = List.association_join(:permissions => :user).exclude(user_id: @user.id)
-            @list_types = ["My Lists", "Others Lists"]
+            @list_types = ['My Lists', 'Others Lists']
             slim :'/index'
       end
 
       get '/new/?' do 
             # @time = (DateTime.now).to_s.gsub!(/T\d{2}.*/,'') #check for strftime method
-            @time = (DateTime.now).strftime("%F")
+            @time = (DateTime.now).strftime('%F')
             slim :'/new_list'
       end
 
       post '/new/?' do 
             list = List.new_list params[:list_name], params[:items], params[:shared_with], @user
-            redirect "/"
+            redirect '/'
       end
 
       get '/edit/:id/?' do 
