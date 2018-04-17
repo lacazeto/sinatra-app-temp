@@ -83,7 +83,15 @@ class Todo < Sinatra::Application
   end
 
   get '/comments/:id/?' do
-
+    @list = List.association_join(:items).where(list_id: params[:id]).first
+    if @list[:user_id] == session[:user_id] || @list[:shared_with] == 'public'
+      @time = (DateTime.now).strftime("%F")
+      @items = Item.where(list_id: params[:id]).order(Sequel.desc(:starred))
+      slim :comments
+    else
+      @message = 'Not enough permissions'
+      slim :'/error'
+    end
   end
 
   get '/delete/:id/?' do

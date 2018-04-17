@@ -1,7 +1,16 @@
 .col-md-8.col-md-offset-2
-      .has-below
-      .panel.panel-primary
-        .panel-heading
-          h3.panel-title 
-            span Comments
-        .panel-body
+  .has-below
+  .panel.panel-primary
+    .panel-heading
+      h3.panel-title 
+        span Comments
+    .panel-body
+      form.form-horizontal.d-flex name="comment" method="post" action=url("#")
+        .form-group.item-group
+          .col-md-8
+            textarea.form-control type="text" name="comment" required="true"
+        .form-group.d-flex
+          .col-md-2.col-md-offset-3
+            button.btn.btn-sm.btn-primary type="submit"
+              i.glyphicon.glyphicon-ok
+              span Submit
