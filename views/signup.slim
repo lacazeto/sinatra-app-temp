@@ -12,7 +12,11 @@
         .form-group
           label.control-label.col-md-3 for="name" Username
           .col-md-8
+            - name_errors = @user.errors.on(:name) || []
             input.form-control type="text" name="name"
+            .help-block 
+            - if name_errors.any?
+            ==name_errors.any? ? name_errors.join(', ') : "Needs to be between 3 and 8 characters"
         .form-group
           label.control-label.col-md-3 for="password" Password
           .col-md-8

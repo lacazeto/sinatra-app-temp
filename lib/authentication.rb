@@ -1,6 +1,7 @@
 class Todo < Sinatra::Application
   get '/signup/?' do
     if session[:user_id].nil?
+      @user = User.new
       slim :'/signup'
     else
       @message = 'Please log out first'
@@ -11,9 +12,9 @@ class Todo < Sinatra::Application
   post '/signup/?' do
     check = User.first(name: params[:name])
     if check.nil?
-      user = User.new(name: params[:name], new_password: params[:password])
-      if user.save
-        session[:user_id] = user.id
+      @user = User.new(name: params[:name], new_password: params[:password])
+      if @user.save
+        session[:user_id] = @user.id
         redirect '/'
       else
         slim :'/signup'
