@@ -1,0 +1,4 @@
+- unless @comments.nil?
+  - @comments.each do |comment|
+    .col-md-8
+      textarea.form-control type="text" name="comment" "#{comment[:text]}"

@@ -13,7 +13,7 @@ class Todo < Sinatra::Application
   end
 
   post '/new/?' do
-    list = List.new_list params[:list_name], params[:items], params[:shared_with], @user
+    List.new_list params[:list_name], params[:items], params[:shared_with], @user
     redirect '/'
   end
 
@@ -34,6 +34,8 @@ class Todo < Sinatra::Application
     if can_view
       @time = (DateTime.now).strftime("%F")
       @items = Item.where(list_id: params[:id]).order(Sequel.desc(:starred))
+      @comments = Comment.join_table(:inner, :users, id: :user_id).where(list_id: params[:id])
+      #Comment.association_join(:users).where(list_id: params[:id])
       slim :'/edit_list', :locals => {:can_edit => can_edit}
     else
       @message = 'Invalid permissions'
@@ -85,9 +87,17 @@ class Todo < Sinatra::Application
   get '/comments/:id/?' do
     @list = List.association_join(:items).where(list_id: params[:id]).first
     if @list[:user_id] == session[:user_id] || @list[:shared_with] == 'public'
-      @time = (DateTime.now).strftime("%F")
-      @items = Item.where(list_id: params[:id]).order(Sequel.desc(:starred))
-      slim :comments
+      slim :new_comment
+    else
+      @message = 'Not enough permissions'
+      slim :'/error'
+    end
+  end
+
+  post '/comments/:id/?' do
+    @comment = Comment.new_comment params[:owner], session[:user_id], params[:comment], params[:shared]
+    if @comment.save
+      redirect '/'
     else
       @message = 'Not enough permissions'
       slim :'/error'

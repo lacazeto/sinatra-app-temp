@@ -5,10 +5,12 @@
       h3.panel-title 
         span Comments
     .panel-body
-      form.form-horizontal.d-flex name="comment" method="post" action=url("#")
+      form.form-horizontal.d-flex name="comment" method="post" action=url("/comments/#{@list[:list_id]}")
         .form-group.item-group
           .col-md-8
             textarea.form-control type="text" name="comment" required="true"
+            input.form-control type="text" name="owner" value="#{@list[:user_id]}" style="display: none"
+            input.form-control type="text" name="shared" value="#{@list[:shared_with]}" style="display: none"
         .form-group.d-flex
           .col-md-2.col-md-offset-3
             button.btn.btn-sm.btn-primary type="submit"
