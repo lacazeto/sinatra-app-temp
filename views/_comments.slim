@@ -1,4 +1,22 @@
+css:
+  .myform {
+    width: 80vw;
+  }
+  .delete-button {
+    max-width: 50px;
+    position: relative;
+    bottom: 45px;
+    right: -80vw;
+  }
+
 - unless @comments.nil?
   - @comments.each do |comment|
-    .col-md-8
-      textarea.form-control type="text" name="comment" "#{comment[:text]}"
+      .col-md-12
+        h4 #{comment[:name]}
+      .d-flex
+        textarea.form-control.myform type="text" name="comment" #{comment[:text]}
+        - if (comment[:creation_date] + 60*15) >= Time.now 
+          .delete-button
+            a href=url("/comments/#{comment[:id]}/delete") 
+              button.btn.btn-danger.btn-xs type="button" Delete
+      
