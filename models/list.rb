@@ -9,7 +9,7 @@ class List < Sequel::Model
   one_to_many :comments
 
   def before_destroy
-    #comments.each(&:destroy)
+    comments.each(&:destroy)
     items.each(&:destroy)
     permissions.each(&:destroy)
     logs.each(&:destroy)
@@ -33,6 +33,7 @@ class List < Sequel::Model
   def self.edit_list id, name, shared_with, items, user
     shared_with == nil ? shared_with = 'private' : shared_with = 'public'
     list = List.first(id: id)
+    return list.destroy if items.all? { |item| item[:name].empty? }
     list.list_name = name
     list.updated_at = Time.now
     list.shared_with = shared_with
