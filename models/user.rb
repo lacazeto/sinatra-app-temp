@@ -12,6 +12,7 @@ class User < Sequel::Model
 
   def before_save
     self.password = Digest::MD5.hexdigest new_password if new_password
+    self.created_at ||= Time.now
   end
 
   def self.find_by_login name, password
