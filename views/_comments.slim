@@ -12,9 +12,9 @@ css:
 - unless @comments.nil?
   - @comments.each do |comment|
       .col-md-12
-        h4 #{comment[:name]}
+        h4 #{comment[:name]} at #{comment[:creation_date].strftime('%R - %d/%m/%Y')}
       .d-flex
-        textarea.form-control.myform type="text" name="comment" #{comment[:text]}
+        textarea.form-control.myform type="text" name="comment" disabled="true" #{comment[:text]}
         - if (comment[:creation_date] + 60*15) >= Time.now 
           .delete-button
             a href=url("/comments/#{comment[:id]}/delete") 
