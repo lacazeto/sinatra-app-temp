@@ -8,7 +8,7 @@ class Todo < Sinatra::Application
 
   get '/new/?' do
     # @time = (DateTime.now).to_s.gsub!(/T\d{2}.*/,'') #check for strftime method
-    @time = (DateTime.now).strftime('%F')
+    @time = DateTime.now.strftime('%F')
     slim :'/new_list'
   end
 
@@ -21,22 +21,21 @@ class Todo < Sinatra::Application
     @list = List.first(id: params[:id])
     can_view = true
     can_edit = true
+    @user = User.first(id: session[:user_id])
     if @list.nil?
       can_view = false
-    elsif @list.shared_with == 'public'
-      user = User.first(id: session[:user_id])
+    else @list.shared_with == 'public'
       permission = Permission.first(list: @list, user: @user)
-      if permission.nil? || permission.permission_level == 'read_only'
-        can_edit = false
-      end
+      can_edit = false if permission.nil? || permission.permission_level == 'read_only'
     end
 
     if can_view
-      @time = (DateTime.now).strftime("%F")
+      @time = DateTime.now.strftime('%F')
       @items = Item.where(list_id: params[:id]).order(Sequel.desc(:starred))
-      @comments = Comment.join_table(:inner, :users, id: :user_id).where(list_id: params[:id])
-      #Comment.association_join(:users).where(list_id: params[:id])
-      slim :'/edit_list', :locals => {:can_edit => can_edit}
+      @comments = @list.comments_dataset.eager(:user)
+      # @comments = Comment.join_table(:inner, :users, id: :user_id).where(list_id: params[:id])
+      # Comment.association_join(:users).where(list_id: params[:id])
+      slim :'/edit_list', :locals => { :can_edit => can_edit }
     else
       @message = 'Invalid permissions'
       slim :'/error'
@@ -56,7 +55,7 @@ class Todo < Sinatra::Application
       can_change_permission = false
     elsif list.shared_with != 'public'
       permission = Permission.first(list: list, user: @user)
-      if permission.nil? or permission.permission_level == 'read_only'
+      if permission.nil? || permission.permission_level == 'read_only'
         can_change_permission = false
       end
     end
@@ -70,11 +69,11 @@ class Todo < Sinatra::Application
         perm.destroy
       end
 
-      if params[:new_permissions] == 'private' or parms[:new_permissions] == 'shared'
+      if params[:new_permissions] == 'private' || parms[:new_permissions] == 'shared'
         user_perms.each do |perm|
           u = User.first(perm[:user])
-          Permission.create(list: list, user: u, permission_level: perm[:level], created_at: Time.now,
-                updated_at: Time.now)
+          Permission.create(list: list, user: u, permission_level: perm[:level],
+                            created_at: Time.now, updated_at: Time.now)
         end
       end
       redirect request.referer
@@ -95,11 +94,20 @@ class Todo < Sinatra::Application
   end
 
   post '/comments/:id/?' do
-    @comment = Comment.new_comment params[:owner], session[:user_id], params[:comment], params[:shared]
+    @comment = Comment.new_comment params[:id], session[:user_id], params[:comment], params[:shared]
     if @comment.save
       redirect '/'
     else
       @message = 'Not enough permissions'
+      slim :'/error'
+    end
+  end
+
+  get '/comments/:id/delete' do
+    if Comment.delete params[:id], session[:user_id]
+      redirect back
+    else
+      @message = 'You cannot delete this comment!'
       slim :'/error'
     end
   end

@@ -30,7 +30,7 @@ table.listings_table
                       u #{list[:name].capitalize} 
                     |- #{list.list_name.capitalize}
                 td.listings_table
-                  a href=url("/edit/#{list.id}") 
+                  a href=url("/edit/#{list[:list_id]}") 
                     button.btn.btn-info.btn-xs type="button" View
-                  a href=url("/comments/#{list.id}") 
+                  a href=url("/comments/#{list[:list_id]}") 
                     button.btn.btn-success.btn-xs type="button" Comment

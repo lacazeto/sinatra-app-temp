@@ -77,6 +77,9 @@ css:
             var template_text = $('#item_template').html()
             $('#items_list').before(template_text);
         });
+        
+  .col-8.col-md-offset-1
+    == slim :'/_comments'
 
 - else
   .col-md-8.col-md-offset-2
