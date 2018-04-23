@@ -11,8 +11,9 @@ require 'byebug'
 
 class Todo < Sinatra::Application
   # CONFIG APP
-  configure do
-    set :environment, :development # ENV['RACK_ENV']
+  set :environment, (ENV['RACK_ENV'] || :development).to_sym
+
+  configure :development do
     register Sinatra::Reloader
     enable :reloader
     also_reload 'lib/*.rb'
@@ -25,15 +26,16 @@ class Todo < Sinatra::Application
   enable :sessions
 
   # CONNECT TO DB
-  env = ENV['RACK_ENV'] || 'development'
-  # DB = Sequel.connect('mysql2://root:pass@mysql.getapp.docker/todo')
-  DB = Sequel.connect(YAML.safe_load(File.open('db/database.yml'))[env])
+  DB = Sequel.connect(YAML.safe_load(File.open('db/database.yml'))[environment.to_s])
 
   # Do not throw exception is model cannot be saved. Just return nil
   Sequel::Model.raise_on_save_failure = false
 
   # Sequel plugins loaded by ALL models.
   Sequel::Model.plugin :validation_helpers
+
+  # Use this for middleware to simulate other actions such as PUT, PATCH or DELETE via HTML forms.
+  # use Rack::MethodOverride
 
   # IMPORT FILES (MODELS & ROUTES)
   Dir[File.join(File.dirname(__FILE__), 'models', '*.rb')].each { |model| require model }
