@@ -16,22 +16,22 @@ class List < Sequel::Model
     super
   end
 
-  def self.new_list name, items, shared_with, user
-    shared_with == nil ? shared_with = 'private' : shared_with = 'public'
+  def self.new_list(name, items, shared_with, user)
+    shared_with = shared_with.nil? ? 'private' : 'public'
     list = List.create(list_name: name, created_at: Time.now, updated_at: Time.now, shared_with: shared_with)
     items.each do |item|
-      unless item[:name].empty?
-        item[:starred] = false if item[:starred] == nil
-        Item.create(name: item[:name], description: item[:description], starred: item[:starred],
-              list: list, user: user, due_date: item[:due_date], created_at: Time.now, updated_at: Time.now)
-      end
+      next if item[:name].empty?
+      item[:starred] = false if item[:starred].nil?
+      Item.create(name: item[:name], description: item[:description], starred: item[:starred],
+                  list: list, user: user, due_date: item[:due_date], created_at: Time.now, updated_at: Time.now)
     end
-    Permission.create(list: list, user: user, permission_level: 'read_write', created_at: Time.now, updated_at: Time.now)
+    Permission.create(list: list, user: user, permission_level: 'read_write', created_at: Time.now,
+                      updated_at: Time.now)
     list
   end
 
-  def self.edit_list id, name, shared_with, items, user
-    shared_with == nil ? shared_with = 'private' : shared_with = 'public'
+  def self.edit_list(id, name, shared_with, items, user)
+    shared_with = shared_with.nil? ? 'private' : 'public'
     list = List.first(id: id)
     return list.destroy if items.all? { |item| item[:name].empty? }
     list.list_name = name
@@ -41,18 +41,14 @@ class List < Sequel::Model
 
     items.each do |item|
       if item[:name].empty?
-        begin
-          i = Item.first(id: item[:id]).destroy
-        rescue
-          puts "inexistent item"
-        end
-        next
+        i = Item.first(id: item[:id])
+        i.destroy unless i.nil?
       else
-      item[:starred] = false if item[:starred].nil?
+        item[:starred] = false if item[:starred].nil?
         i = Item.first(id: item[:id])
         if i.nil?
-          Item.create(name: item[:name], description: item[:description],starred: item[:starred], list: list,
-              due_date: item[:due_date], user: user, created_at: Time.now, updated_at: Time.now)
+          Item.create(name: item[:name], description: item[:description], starred: item[:starred], list: list,
+                      due_date: item[:due_date], user: user, created_at: Time.now, updated_at: Time.now)
         else
           i.name = item[:name]
           i.description = item[:description]

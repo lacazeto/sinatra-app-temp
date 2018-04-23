@@ -5,7 +5,7 @@ class Todo < Sinatra::Application
       slim :'/signup'
     else
       @message = 'Please log out first'
-      slim :'error'
+      slim :'/error'
     end
   end
 
@@ -21,7 +21,7 @@ class Todo < Sinatra::Application
       end
     else
       @message = 'This Username already exists'
-      slim :'error'
+      slim :'/error'
     end
   end
 
@@ -29,8 +29,8 @@ class Todo < Sinatra::Application
     if session[:user_id].nil?
       slim :'/login'
     else
-    @message = 'Please log out first'
-      slim :'error'
+      @message = 'Please log out first'
+      slim :'/error'
     end
   end
 
@@ -38,7 +38,7 @@ class Todo < Sinatra::Application
     user = User.find_by_login(params[:name], params[:password])
     if user.nil?
       @message = 'Invalid login credentials'
-      slim :'error'
+      slim :'/error'
     else
       session[:user_id] = user.id
       redirect '/'

@@ -9,7 +9,6 @@ require 'date'
 require 'pry'
 require 'byebug'
 
-
 class Todo < Sinatra::Application
   # CONFIG APP
   configure do
@@ -28,7 +27,7 @@ class Todo < Sinatra::Application
   # CONNECT TO DB
   env = ENV['RACK_ENV'] || 'development'
   # DB = Sequel.connect('mysql2://root:pass@mysql.getapp.docker/todo')
-  DB = Sequel.connect(YAML.load(File.open('db/database.yml'))[env])
+  DB = Sequel.connect(YAML.safe_load(File.open('db/database.yml'))[env])
 
   # Do not throw exception is model cannot be saved. Just return nil
   Sequel::Model.raise_on_save_failure = false

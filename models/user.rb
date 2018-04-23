@@ -15,7 +15,7 @@ class User < Sequel::Model
     self.created_at ||= Time.now
   end
 
-  def self.find_by_login name, password
+  def self.find_by_login(name, password)
     md5sum = Digest::MD5.hexdigest password
     User.first(name: name, password: md5sum)
   end
@@ -23,13 +23,11 @@ class User < Sequel::Model
   def validate
     super
     validates_presence [:name]
-    validates_format(/\A[A-Za-z]/, :name, {message: 'is not a valid name'})
+    validates_format(/\A[A-Za-z]/, :name, message: 'is not a valid name')
     validates_min_length 3, :name
     validates_max_length 8, :name
     validates_unique :name
 
-    if new_password
-      validates_min_length 3, :new_password
-    end
+    validates_min_length 3, :new_password if new_password
   end
 end

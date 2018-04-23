@@ -1,14 +1,14 @@
 class Todo < Sinatra::Application
   get '/?' do
     @my_lists = List.association_join(:permissions).where(user_id: @user.id)
-    @others_lists = List.association_join(:permissions => :user).exclude(user_id: @user.id)
+    @others_lists = List.association_join(permissions: :user).exclude(user_id: @user.id)
     @list_types = ['My Lists', 'Others Lists']
     slim :'/index'
   end
 
   get '/new/?' do
     # @time = (DateTime.now).to_s.gsub!(/T\d{2}.*/,'') #check for strftime method
-    @time = DateTime.now.strftime('%F')
+    @time = Time.now.strftime('%F')
     slim :'/new_list'
   end
 
@@ -24,18 +24,18 @@ class Todo < Sinatra::Application
     @user = User.first(id: session[:user_id])
     if @list.nil?
       can_view = false
-    else @list.shared_with == 'public'
+    elsif @list.shared_with == 'public'
       permission = Permission.first(list: @list, user: @user)
       can_edit = false if permission.nil? || permission.permission_level == 'read_only'
     end
 
     if can_view
-      @time = DateTime.now.strftime('%F')
+      @time = Time.now.strftime('%F')
       @items = Item.where(list_id: params[:id]).order(Sequel.desc(:starred))
       @comments = @list.comments_dataset.eager(:user)
       # @comments = Comment.join_table(:inner, :users, id: :user_id).where(list_id: params[:id])
       # Comment.association_join(:users).where(list_id: params[:id])
-      slim :'/edit_list', :locals => { :can_edit => can_edit }
+      slim :'/edit_list', locals: { can_edit: can_edit }
     else
       @message = 'Invalid permissions'
       slim :'/error'
@@ -55,9 +55,7 @@ class Todo < Sinatra::Application
       can_change_permission = false
     elsif list.shared_with != 'public'
       permission = Permission.first(list: list, user: @user)
-      if permission.nil? || permission.permission_level == 'read_only'
-        can_change_permission = false
-      end
+      can_change_permission = false if permission.nil? || permission.permission_level == 'read_only'
     end
 
     if can_change_permission
@@ -65,9 +63,7 @@ class Todo < Sinatra::Application
       list.save
 
       current_permissions = Permission.first(list: list)
-      current_permissions.each do |perm|
-        perm.destroy
-      end
+      current_permissions.each(&:destroy)
 
       if params[:new_permissions] == 'private' || parms[:new_permissions] == 'shared'
         user_perms.each do |perm|
@@ -119,9 +115,9 @@ class Todo < Sinatra::Application
     # permission.destroy
     # items.each {|item| item.destroy}
     permission = Permission.first(list: list, user: @user)
-    if permission.nil? or permission.permission_level == 'read_only'
+    if permission.nil? || permission.permission_level == 'read_only'
       @message = 'Invalid permissions. You are not allowed to delete this.'
-      slim :'error'
+      slim :'/error'
     else
       list.destroy
       redirect '/'
