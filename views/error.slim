@@ -1,2 +1,11 @@
-. style="height: 80vh"
+. style="height: 40vh"
  h1 style="text-align: center; padding-top: 150px" #{@message}
+
+.col-2 style="display:flex; justify-content: center;"
+  .
+    - direct = request.fullpath == "/login" ? "/" : request.fullpath
+    a href="#{direct}"
+      button.btn.btn-sm.btn-warning
+        span Return
+ 
+ 
