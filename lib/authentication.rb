@@ -17,6 +17,8 @@ class Todo < Sinatra::Application
         session[:user_id] = @user.id
         redirect '/'
       else
+        flash.now[:user] = @user.errors.on(:name).nil? ? {} : @user.errors.on(:name).uniq.join('. ').to_s
+        flash.now[:pass] = @user.errors.on(:new_password).nil? ? {} : @user.errors.on(:new_password).join('. ').to_s
         slim :'/signup'
       end
     else
