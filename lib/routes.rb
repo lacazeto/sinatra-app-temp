@@ -13,31 +13,24 @@ class Todo < Sinatra::Application
   end
 
   post '/new/?' do
-    List.new_list params[:list_name], params[:items], params[:shared_with], @user
-    redirect '/'
+    if List.new_list params[:list_name], params[:items], params[:shared_with], @user
+      redirect '/'
+    else
+      @message = 'List must contain at least one item to be created'
+      slim :'/error'
+    end
   end
 
   get '/edit/:id/?' do
     @list = List.first(id: params[:id])
-    can_view = true
-    can_edit = true
-    @user = User.first(id: session[:user_id])
-    if @list.nil?
-      can_view = false
-    elsif @list.shared_with == 'public'
-      permission = Permission.first(list: @list, user: @user)
-      can_edit = false if permission.nil? || permission.permission_level == 'read_only'
-    end
-
-    if can_view
+    if User.can_view_list? @list
       @time = Time.now.strftime('%F')
       @items = Item.where(list_id: params[:id]).order(Sequel.desc(:starred))
       @comments = @list.comments_dataset.eager(:user)
-      # @comments = Comment.join_table(:inner, :users, id: :user_id).where(list_id: params[:id])
-      # Comment.association_join(:users).where(list_id: params[:id])
-      slim :'/edit_list', locals: { can_edit: can_edit }
+      @can_edit = User.can_edit_list? @list[:id], @user[:id]
+      slim :'/edit_list'
     else
-      @message = 'Invalid permissions'
+      @message = 'This list is unavailable'
       slim :'/error'
     end
   end

@@ -30,4 +30,15 @@ class User < Sequel::Model
 
     validates_min_length 3, :new_password, message: 'Password must have at least 3 characters' if new_password
   end
+
+  def self.can_view_list?(list)
+    return false if list.nil?
+    list.shared_with == 'public'
+  end
+
+  def self.can_edit_list?(list, user)
+    permission = Permission.first(list_id: list, user_id: user)
+    return false if permission.nil? || permission[:permission_level] == 'read_only'
+    true
+  end
 end
