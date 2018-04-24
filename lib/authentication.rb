@@ -20,7 +20,7 @@ class Todo < Sinatra::Application
         slim :'/signup'
       end
     else
-      @message = 'This Username already exists'
+      @message = 'This Username is already being used'
       slim :'/error'
     end
   end
@@ -46,8 +46,8 @@ class Todo < Sinatra::Application
   end
 
   get '/logout/?' do
-    session[:user_id] = nil
-    # session.clear can also be used
+    # session[:user_id] = nil
+    session.clear
     redirect '/login'
   end
 end

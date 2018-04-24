@@ -22,12 +22,12 @@ class User < Sequel::Model
 
   def validate
     super
-    validates_presence [:name]
-    validates_format(/\A[A-Za-z]/, :name, message: 'is not a valid name')
-    validates_min_length 3, :name
-    validates_max_length 8, :name
+    validates_presence [:name], message: 'Username must contain between 3 and 8 characters'
+    validates_format(/\A[A-Za-z1-9]/, :name, message: 'It is not a valid name')
+    validates_min_length 3, :name, message: 'Username must contain between 3 and 8 characters'
+    validates_max_length 8, :name, message: 'Username must contain between 3 and 8 characters'
     validates_unique :name
 
-    validates_min_length 3, :new_password if new_password
+    validates_min_length 3, :new_password, message: 'Password must have at least 3 characters' if new_password
   end
 end

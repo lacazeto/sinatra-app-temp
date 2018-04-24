@@ -15,12 +15,14 @@
             - name_errors = @user.errors.on(:name) || []
             input.form-control type="text" name="name"
             .help-block 
-            - if name_errors.any?
-            ==name_errors.any? ? name_errors.join(', ') : "Needs to be between 3 and 8 characters"
+            ==name_errors.uniq.join('. ') if name_errors.any?
         .form-group
           label.control-label.col-md-3 for="password" Password
           .col-md-8
+            - pass_errors = @user.errors.on(:new_password) || []
             input.form-control type="password" name="password"
+            .help-block 
+            ==pass_errors[0] if pass_errors.any?
         .form-group
           .col-md-2.col-md-offset-3
             button.btn.btn-sm.btn-primary type="submit"
