@@ -36,8 +36,14 @@ class Todo < Sinatra::Application
   end
 
   post '/edit/:id' do
-    List.edit_list params[:id], params[:list_name], params[:shared_with], params[:items], @user
-    redirect '/'
+    @list = List.first(id: params[:id])
+    if User.can_edit_list? @list[:id], @user[:id]
+      List.edit_list params[:id], params[:list_name], params[:shared_with], params[:items], @user
+      redirect '/'
+    else
+      @message = 'Not enough permissions'
+      slim :'/error'
+    end
   end
 
   post '/permission/?' do
@@ -68,13 +74,14 @@ class Todo < Sinatra::Application
       redirect request.referer
     else
       @message = 'Invalid permissions'
-      halt 403
+      slim :'/error'
+      # halt 403
     end
   end
 
   get '/comments/:id/?' do
     @list = List.association_join(:items).where(list_id: params[:id]).first
-    if @list[:user_id] == session[:user_id] || @list[:shared_with] == 'public'
+    if User.can_comment? @list, @user[:id]
       slim :new_comment
     else
       @message = 'Not enough permissions'
@@ -103,17 +110,12 @@ class Todo < Sinatra::Application
 
   get '/delete/:id/?' do
     list = List.first(id: params[:id])
-    # items = Item.where(list_id: params[:id])
-    # permission = Permission.first(list_id: params[:id])
-    # permission.destroy
-    # items.each {|item| item.destroy}
-    permission = Permission.first(list: list, user: @user)
-    if permission.nil? || permission.permission_level == 'read_only'
-      @message = 'Invalid permissions. You are not allowed to delete this.'
-      slim :'/error'
-    else
+    if User.can_edit_list? list[:id], @user[:id]
       list.destroy
       redirect '/'
+    else
+      @message = 'Invalid permissions. You are not allowed to delete this.'
+      slim :'/error'
     end
   end
 end

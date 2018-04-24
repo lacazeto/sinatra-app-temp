@@ -41,4 +41,9 @@ class User < Sequel::Model
     return false if permission.nil? || permission[:permission_level] == 'read_only'
     true
   end
+
+  def self.can_comment?(list, user)
+    return true if list[:user_id] == user || list[:shared_with] == 'public'
+    false
+  end
 end
