@@ -23,7 +23,7 @@ class User < Sequel::Model
   def validate
     super
     validates_presence [:name], message: 'Username must contain between 3 and 8 characters'
-    validates_format(/\A[A-Za-z1-9]/, :name, message: 'It is not a valid name')
+    validates_format(/\A[A-Za-z1-9]/, :name, message: 'Name must contain characteres and numbers only')
     validates_min_length 3, :name, message: 'Username must contain between 3 and 8 characters'
     validates_max_length 8, :name, message: 'Username must contain between 3 and 8 characters'
     validates_unique :name

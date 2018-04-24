@@ -1,13 +1,4 @@
-require 'sinatra'
-require 'sinatra/base'
-require 'sequel'
-require 'slim'
-require 'yaml'
-require 'digest'
-require 'sinatra/reloader'
-require 'date'
-require 'pry'
-require 'byebug'
+require "sinatra/reloader" if development?
 
 class Todo < Sinatra::Application
   # CONFIG APP
@@ -22,6 +13,8 @@ class Todo < Sinatra::Application
       puts "Reloaded: #{Time.now}"
     end
   end
+
+  register Sinatra::Flash
 
   enable :sessions
 
