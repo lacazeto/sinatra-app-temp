@@ -31,19 +31,15 @@ class User < Sequel::Model
     validates_min_length 3, :new_password, message: 'Password must have at least 3 characters' if new_password
   end
 
-  def self.can_view_list?(list)
+  def self.can_interact?(list, user)
     return false if list.nil?
-    list.shared_with == 'public'
+    return true if list[:user_id] == user || list[:shared_with] == 'public'
+    false
   end
 
   def self.can_edit_list?(list, user)
     permission = Permission.first(list_id: list, user_id: user)
     return false if permission.nil? || permission[:permission_level] == 'read_only'
     true
-  end
-
-  def self.can_comment?(list, user)
-    return true if list[:user_id] == user || list[:shared_with] == 'public'
-    false
   end
 end

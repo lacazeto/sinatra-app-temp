@@ -22,22 +22,23 @@ class Todo < Sinatra::Application
   end
 
   get '/edit/:id/?' do
-    @list = List.first(id: params[:id])
-    if User.can_view_list? @list
+    @list = List.association_join(:items).where(list_id: params[:id]).first
+    @list[:id] = @list[:list_id] # temporary fix
+    if !@list.nil? && (User.can_interact? @list, @user[:id])
       @time = Time.now.strftime('%F')
       @items = Item.where(list_id: params[:id]).order(Sequel.desc(:starred))
       @comments = @list.comments_dataset.eager(:user)
-      @can_edit = User.can_edit_list? @list[:id], @user[:id]
+      @can_edit = User.can_edit_list? @list[:list_id], @user[:id]
       slim :'/edit_list'
     else
-      @message = 'This list is unavailable'
+      @message = 'This list is unavailable or doesn´t exist'
       slim :'/error'
     end
   end
 
   post '/edit/:id' do
-    @list = List.first(id: params[:id])
-    if User.can_edit_list? @list[:id], @user[:id]
+    @list = List.association_join(:items).where(list_id: params[:id]).first
+    if !@list.nil? && (User.can_edit_list? @list[:list_id], @user[:id])
       List.edit_list params[:id], params[:list_name], params[:shared_with], params[:items], @user
       redirect '/'
     else
@@ -81,7 +82,7 @@ class Todo < Sinatra::Application
 
   get '/comments/:id/?' do
     @list = List.association_join(:items).where(list_id: params[:id]).first
-    if User.can_comment? @list, @user[:id]
+    if User.can_interact? @list, @user[:id]
       slim :new_comment
     else
       @message = 'Not enough permissions'
@@ -90,8 +91,9 @@ class Todo < Sinatra::Application
   end
 
   post '/comments/:id/?' do
-    @comment = Comment.new_comment params[:id], session[:user_id], params[:comment], params[:shared]
-    if @comment.save
+    list = List.association_join(:items).where(list_id: params[:id]).first
+    @comment = Comment.new_comment params[:id], session[:user_id], params[:comment], params[:shared], list[:list_id]
+    if !@comment.nil? && @comment.save
       redirect '/'
     else
       @message = 'Not enough permissions'
