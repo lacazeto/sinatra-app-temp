@@ -13,6 +13,7 @@ css:
       margin-bottom: 10px;
     }
 
+== slim :'/_flash'
 .col-md-8.col-md-offset-2
   .has-below
   .panel.panel-primary
@@ -25,11 +26,11 @@ css:
           label.control-label.col-md-4 for="list_name" 
               span List Name
           .col-md-8
-            input.form-control type="text" name="list_name" required="true"
+            input.form-control type="text" name="list_name"
         hr
         .form-group.item-group
           .col-md-4
-            input.form-control type="text" name="items[][name]" placeholder="Item name" required="true"
+            input.form-control type="text" name="items[][name]" placeholder="Item name"
             span#date Due Date:
             input.form-control type="date" name="items[][due_date]" min="#{@time}"
           .col-md-8
@@ -52,7 +53,7 @@ css:
     hr
     .form-group.item-group
       .col-md-4
-        input.form-control type="text" name="items[][name]" placeholder="Item name" required="true"
+        input.form-control type="text" name="items[][name]" placeholder="Item name"
         span#date Due Date:
         input.form-control type="date" name="items[][due_date]" min="#{@time}"
       .col-md-8
