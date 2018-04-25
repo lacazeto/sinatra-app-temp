@@ -13,11 +13,15 @@ class Todo < Sinatra::Application
   end
 
   post '/new/?' do
-    if List.new_list params[:list_name], params[:items], params[:shared_with], @user
+    list_creation = List.new_list params[:list_name], params[:items], params[:shared_with], @user
+    @time = Time.now.strftime('%F')
+    if list_creation.class == List
       redirect '/'
+    elsif list_creation.nil?
+      flash.now[:list] = Todo.flash_prepare ['Choose a due date from today and onwards']
+      slim :'/new_list'
     else
-      flash.now[:list] = Todo.flash_prepare ['List and item names are required']
-      @time = Time.now.strftime('%F')
+      flash.now[:list] = Todo.flash_prepare list_creation
       slim :'/new_list'
     end
   end

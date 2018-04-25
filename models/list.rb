@@ -17,7 +17,7 @@ class List < Sequel::Model
   end
 
   def self.new_list(name, items, shared_with, user)
-    return false if items.all? { |item| item[:name].empty? } || name.empty?
+    return ['List and item names are required'] if items.all? { |item| item[:name].empty? } || name.empty?
     shared_with = shared_with.nil? ? 'private' : 'public'
     Todo.db.transaction do
       list = List.create(list_name: name, created_at: Time.now, updated_at: Time.now, shared_with: shared_with)
