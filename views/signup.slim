@@ -1,10 +1,4 @@
-.row style="height: 52px;"
-  - flash_errors = flash
-  - flash_errors.each do |key, value|
-    - unless flash_errors[key].empty?
-      .row 
-        . class="alert alert-danger alert-#{key}" style="text-align: center;"
-          ==flash_errors[key]
+== slim :'/_flash'
 .col-md-4.col-md-offset-4
   .has-below
   .has-below
@@ -33,6 +27,8 @@
           .col-md-2.col-md-offset-3
             button.btn.btn-sm.btn-primary type="submit"
               i.glyphicon.glyphicon-ok Submit
+
+      a href="/login" Return to login
 
 javascript:
   $(document).ready(() => {

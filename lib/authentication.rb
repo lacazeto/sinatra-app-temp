@@ -17,13 +17,13 @@ class Todo < Sinatra::Application
         session[:user_id] = @user.id
         redirect '/'
       else
-        flash.now[:user] = @user.errors.on(:name).nil? ? {} : @user.errors.on(:name).uniq.join('. ').to_s
-        flash.now[:pass] = @user.errors.on(:new_password).nil? ? {} : @user.errors.on(:new_password).join('. ').to_s
+        flash.now[:user] = Todo.flash_prepare @user.errors.on(:name)
+        flash.now[:pass] = Todo.flash_prepare @user.errors.on(:new_password)
         slim :'/signup'
       end
     else
-      @message = 'This Username is already being used'
-      slim :'/error'
+      flash.now[:user] = Todo.flash_prepare ['This username is already in use']
+      slim :'/signup'
     end
   end
 
@@ -39,8 +39,8 @@ class Todo < Sinatra::Application
   post '/login/?' do
     user = User.find_by_login(params[:name], params[:password])
     if user.nil?
-      @message = 'Invalid login credentials'
-      slim :'/error'
+      flash.now[:user] = Todo.flash_prepare ['Invalid login credentials']
+      slim :'/login'
     else
       session[:user_id] = user.id
       redirect '/'
