@@ -6,6 +6,7 @@ class Item < Sequel::Model
 
   def self.new_item(item, list, user)
     unless item[:name].empty?
+      raise ArgumentError, 'Invalid due date' if Date.parse(item[:due_date]) < (DateTime.now - 1)
       item[:starred] = false if item[:starred].nil?
       Item.create(name: item[:name], description: item[:description], starred: item[:starred],
                   list_id: list[:id], user_id: user[:id], due_date: item[:due_date], created_at: Time.now,
