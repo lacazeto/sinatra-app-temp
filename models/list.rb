@@ -19,11 +19,13 @@ class List < Sequel::Model
   def self.new_list(name, items, shared_with, user)
     return false if items.all? { |item| item[:name].empty? } || name.empty?
     shared_with = shared_with.nil? ? 'private' : 'public'
-    list = List.create(list_name: name, created_at: Time.now, updated_at: Time.now, shared_with: shared_with)
-    items.each { |item| Item.new_item item, list, user }
-    Permission.create(list: list, user: user, permission_level: 'read_write', created_at: Time.now,
-                      updated_at: Time.now)
-    list
+    Todo.db.transaction do
+      list = List.create(list_name: name, created_at: Time.now, updated_at: Time.now, shared_with: shared_with)
+      items.each { |item| Item.new_item item, list, user }
+      Permission.create(list: list, user: user, permission_level: 'read_write', created_at: Time.now,
+                        updated_at: Time.now)
+      list
+    end
   end
 
   def self.edit_list(id, name, shared_with, items, user)

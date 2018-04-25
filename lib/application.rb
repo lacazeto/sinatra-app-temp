@@ -9,4 +9,8 @@ class Todo < Sinatra::Application
   def self.flash_prepare(errors)
     errors.nil? ? {} : errors.uniq.join('. ').to_s
   end
+
+  def self.db
+    DB
+  end
 end
