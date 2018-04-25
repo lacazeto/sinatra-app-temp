@@ -17,6 +17,7 @@ class Todo < Sinatra::Application
       redirect '/'
     else
       flash.now[:list] = Todo.flash_prepare ['List and item names are required']
+      @time = Time.now.strftime('%F')
       slim :'/new_list'
     end
   end

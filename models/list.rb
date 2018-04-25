@@ -21,7 +21,7 @@ class List < Sequel::Model
     shared_with = shared_with.nil? ? 'private' : 'public'
     Todo.db.transaction do
       list = List.create(list_name: name, created_at: Time.now, updated_at: Time.now, shared_with: shared_with)
-      items.each { |item| Item.new_item item, list, user }
+      raise Sequel::Rollback unless items.all? { |item| Item.new_item item, list, user }
       Permission.create(list: list, user: user, permission_level: 'read_write', created_at: Time.now,
                         updated_at: Time.now)
       list
