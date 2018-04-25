@@ -16,8 +16,8 @@ class Todo < Sinatra::Application
     if List.new_list params[:list_name], params[:items], params[:shared_with], @user
       redirect '/'
     else
-      @message = 'List must contain at least one item to be created'
-      slim :'/error'
+      flash.now[:list] = Todo.flash_prepare ['List and item names are required']
+      slim :'/new_list'
     end
   end
 

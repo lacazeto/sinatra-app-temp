@@ -17,7 +17,7 @@ class List < Sequel::Model
   end
 
   def self.new_list(name, items, shared_with, user)
-    return false if items.all? { |item| item[:name].empty? }
+    return false if items.all? { |item| item[:name].empty? } || name.empty?
     shared_with = shared_with.nil? ? 'private' : 'public'
     list = List.create(list_name: name, created_at: Time.now, updated_at: Time.now, shared_with: shared_with)
     items.each do |item|
