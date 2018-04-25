@@ -20,12 +20,7 @@ class List < Sequel::Model
     return false if items.all? { |item| item[:name].empty? } || name.empty?
     shared_with = shared_with.nil? ? 'private' : 'public'
     list = List.create(list_name: name, created_at: Time.now, updated_at: Time.now, shared_with: shared_with)
-    items.each do |item|
-      next if item[:name].empty?
-      item[:starred] = false if item[:starred].nil?
-      Item.create(name: item[:name], description: item[:description], starred: item[:starred],
-                  list: list, user: user, due_date: item[:due_date], created_at: Time.now, updated_at: Time.now)
-    end
+    items.each { |item| Item.new_item item, list, user }
     Permission.create(list: list, user: user, permission_level: 'read_write', created_at: Time.now,
                       updated_at: Time.now)
     list
