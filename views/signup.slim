@@ -1,4 +1,4 @@
-.row
+.row style="height: 52px;"
   - flash_errors = flash
   - flash_errors.each do |key, value|
     - unless flash_errors[key].empty?
@@ -6,7 +6,6 @@
         . class="alert alert-danger alert-#{key}" style="text-align: center;"
           ==flash_errors[key]
 .col-md-4.col-md-offset-4
-  .has-below
   .has-below
   .has-below
   .has-below
@@ -36,4 +35,11 @@
               i.glyphicon.glyphicon-ok Submit
 
 javascript:
-    
+  $(document).ready(() => {
+    $(".alert-danger").each((index,elem) => {
+      setTimeout(() => { 
+        $(elem).fadeOut(3000);
+      }, 2000 + index*2000);
+    });
+  });
+
