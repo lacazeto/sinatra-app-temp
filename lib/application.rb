@@ -5,4 +5,8 @@ class Todo < Sinatra::Application
 
     redirect '/login' if !%w[login signup].include?(request.path_info.split('/')[1]) && session[:user_id].nil?
   end
+
+  def self.flash_prepare(errors)
+    errors.nil? ? {} : errors.uniq.join('. ').to_s
+  end
 end
