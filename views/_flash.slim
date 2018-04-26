@@ -1,7 +1,15 @@
 .row style="height: 52px;"
-  - flash_errors = flash
-  - flash_errors.each do |key, value|
-    - unless flash_errors[key].empty?
-      .row 
-        . class="alert alert-danger alert-#{key}" style="text-align: center;"
-          ==flash_errors[key]
+  - flash_alerts = flash
+  - if flash_alerts.has_key?(:positive)
+    - flash_alerts.delete(:positive)
+    - flash_alerts.each do |key, value|
+      - unless flash_alerts[key].empty?
+        .row 
+          . class="alert alert-success alert-#{key}" style="text-align: center;"
+            ==flash_alerts[key]      
+  -else
+    - flash_alerts.each do |key, value|
+      - unless flash_alerts[key].empty?
+        .row 
+          . class="alert alert-danger alert-#{key}" style="text-align: center;"
+            ==flash_alerts[key]
