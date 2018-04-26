@@ -9,8 +9,17 @@ css:
     ul {
       padding: 0 15px;
     }
+    .permissions {
+      padding: 0 10px;
+    }
     button {
       margin: 5px;
+    }
+    .btn-primary {
+      margin: 0;
+    }
+    .btn-primary {
+      width: 100% !important;
     }
     thead {
       border-bottom: 1px solid;
@@ -25,6 +34,10 @@ css:
     }
     .right-listing {
       padding: 0;
+    }
+    .caret{
+      border-right: none;
+      border-left: none;
     }
 == slim :'/_flash'
 .has-below
@@ -46,9 +59,19 @@ css:
 
   .right-listing.col-md-4
     ul
-     li 
-     li
-       i.glyphicon.glyphicon-plus
-         a href=url("/new")
-           span New-List
+      li
+        a href=url("/new") style="text-decoration: inherit; color: inherit;" 
+          button.btn.btn-primary New-List
+      li
+        .dropdown
+          button.btn.btn-primary.dropdown-toggle type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" Permissions <span class="caret"></span>
+          ul.dropdown-menu aria-labelledby="dropdownMenu1"
+            li.dropdown-header Grant or Revoke Permissions to:
+            - @my_lists.each do |item|
+              li.permissions
+                p List: #{item.list_name.capitalize}
+                form.form-horizontal name="list" method="post" action=url("/permission/#{item[:list_id]}")
+                  input.form-control type="text" name="user_affected" placeholder="username"
+                  input.form-control type="text" name="owner" value="#{@user[:id]}" style="display: none"
+                  button.btn.btn-sm.btn-primary type="submit" Submit
 .has-below
