@@ -15,6 +15,8 @@ class Item < Sequel::Model
     if item[:name].empty?
       i = Item.first(id: item[:id])
       i.destroy unless i.nil?
+      # must return true otherwise sequel transaction will roll-back
+      return true
     else
       item[:starred] = false if item[:starred].nil?
       i = Item.first(id: item[:id])
