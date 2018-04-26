@@ -12,7 +12,7 @@ class Todo < Sinatra::Application
   post '/signup/?' do
     check = User.first(name: params[:name])
     if check.nil?
-      @user = User.new(name: params[:name], new_password: params[:password])
+      @user = User.new(name: params[:name].downcase, new_password: params[:password])
       if @user.save
         session[:user_id] = @user.id
         redirect '/'
