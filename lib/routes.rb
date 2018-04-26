@@ -54,38 +54,16 @@ class Todo < Sinatra::Application
     end
   end
 
-  # post '/permission/?' do
-  #   list = List.first(id: params[:id])
-  #   can_change_permission = true
-
-  #   if list.nil?
-  #     can_change_permission = false
-  #   elsif list.shared_with != 'public'
-  #     permission = Permission.first(list: list, user: @user)
-  #     can_change_permission = false if permission.nil? || permission.permission_level == 'read_only'
-  #   end
-
-  #   if can_change_permission
-  #     list.permission = params[:new_permissions]
-  #     list.save
-
-  #     current_permissions = Permission.first(list: list)
-  #     current_permissions.each(&:destroy)
-
-  #     if params[:new_permissions] == 'private' || parms[:new_permissions] == 'shared'
-  #       user_perms.each do |perm|
-  #         u = User.first(perm[:user])
-  #         Permission.create(list: list, user: u, permission_level: perm[:level],
-  #                           created_at: Time.now, updated_at: Time.now)
-  #       end
-  #     end
-  #     redirect request.referer
-  #   else
-  #     @message = 'Invalid permissions'
-  #     slim :'/error'
-  #     # halt 403
-  #   end
-  # end
+  post '/permission/:id' do
+    list = List.association_join(:items).where(list_id: params[:id]).first
+    if User.can_edit_list? list[:list_id], params[:owner].to_i
+      Permission.update params[:user_affected], list[:list_id]
+      redirect '/'
+    else
+      @message = 'Invalid permissions'
+      slim :'/error'
+    end
+  end
 
   get '/comments/:id/?' do
     @list = List.association_join(:items).where(list_id: params[:id]).first
