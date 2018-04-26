@@ -26,6 +26,7 @@ class List < Sequel::Model
                         updated_at: Time.now)
       list
     end
+    # return nil if transaction fails
   end
 
   def self.edit_list(id, name, shared_with, items, user)
