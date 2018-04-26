@@ -49,8 +49,8 @@ class Todo < Sinatra::Application
       List.edit_list params[:id], params[:list_name], params[:shared_with], params[:items], @user
       redirect '/'
     else
-      @message = 'Not enough permissions to perform this action'
-      slim :'/error'
+      flash.next[:list] = Todo.flash_prepare ['Not enough permissions to perform this action.']
+      redirect back
     end
   end
 
@@ -129,7 +129,9 @@ class Todo < Sinatra::Application
     list = List.first(id: params[:id])
     if User.can_edit_list? list[:id], @user[:id]
       list.destroy
-      redirect '/'
+      flash.next[:list] = Todo.flash_prepare ['List deleted']
+      flash.next[:positive] = 'not nil'
+      redirect back
     else
       @message = 'Invalid permissions. You are not allowed to delete this.'
       slim :'/error'
