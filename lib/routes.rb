@@ -16,6 +16,8 @@ class Todo < Sinatra::Application
     list_creation = List.new_list params[:list_name], params[:items], params[:shared_with], @user
     @time = Time.now.strftime('%F')
     if list_creation.class == List
+      flash.next[:comment] = Todo.flash_prepare ['List created!']
+      flash.next[:positive] = 'not nil'
       redirect '/'
     elsif list_creation.nil?
       flash.now[:list] = Todo.flash_prepare ['Choose a due date from today and onwards']
