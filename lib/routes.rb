@@ -47,43 +47,43 @@ class Todo < Sinatra::Application
       List.edit_list params[:id], params[:list_name], params[:shared_with], params[:items], @user
       redirect '/'
     else
-      @message = 'Not enough permissions'
+      @message = 'Not enough permissions to perform this action'
       slim :'/error'
     end
   end
 
-  post '/permission/?' do
-    list = List.first(id: params[:id])
-    can_change_permission = true
+  # post '/permission/?' do
+  #   list = List.first(id: params[:id])
+  #   can_change_permission = true
 
-    if list.nil?
-      can_change_permission = false
-    elsif list.shared_with != 'public'
-      permission = Permission.first(list: list, user: @user)
-      can_change_permission = false if permission.nil? || permission.permission_level == 'read_only'
-    end
+  #   if list.nil?
+  #     can_change_permission = false
+  #   elsif list.shared_with != 'public'
+  #     permission = Permission.first(list: list, user: @user)
+  #     can_change_permission = false if permission.nil? || permission.permission_level == 'read_only'
+  #   end
 
-    if can_change_permission
-      list.permission = params[:new_permissions]
-      list.save
+  #   if can_change_permission
+  #     list.permission = params[:new_permissions]
+  #     list.save
 
-      current_permissions = Permission.first(list: list)
-      current_permissions.each(&:destroy)
+  #     current_permissions = Permission.first(list: list)
+  #     current_permissions.each(&:destroy)
 
-      if params[:new_permissions] == 'private' || parms[:new_permissions] == 'shared'
-        user_perms.each do |perm|
-          u = User.first(perm[:user])
-          Permission.create(list: list, user: u, permission_level: perm[:level],
-                            created_at: Time.now, updated_at: Time.now)
-        end
-      end
-      redirect request.referer
-    else
-      @message = 'Invalid permissions'
-      slim :'/error'
-      # halt 403
-    end
-  end
+  #     if params[:new_permissions] == 'private' || parms[:new_permissions] == 'shared'
+  #       user_perms.each do |perm|
+  #         u = User.first(perm[:user])
+  #         Permission.create(list: list, user: u, permission_level: perm[:level],
+  #                           created_at: Time.now, updated_at: Time.now)
+  #       end
+  #     end
+  #     redirect request.referer
+  #   else
+  #     @message = 'Invalid permissions'
+  #     slim :'/error'
+  #     # halt 403
+  #   end
+  # end
 
   get '/comments/:id/?' do
     @list = List.association_join(:items).where(list_id: params[:id]).first
@@ -97,12 +97,20 @@ class Todo < Sinatra::Application
 
   post '/comments/:id/?' do
     list = List.association_join(:items).where(list_id: params[:id]).first
-    @comment = Comment.new_comment params[:id], session[:user_id], params[:comment], params[:shared], list[:list_id]
-    if !@comment.nil? && @comment.save
-      redirect '/'
+    # returns nil if user cannot interact with this list
+    comment = Comment.new_comment list, session[:user_id], params[:comment]
+    if !comment.nil?
+      if comment.save
+        flash.next[:comment] = Todo.flash_prepare ['Comment posted with success']
+        flash.next[:positive] = 'not nil'
+        redirect '/'
+      else
+        flash.next[:comment] = Todo.flash_prepare comment.errors.on(:text)
+        redirect back
+      end
     else
-      @message = 'Not enough permissions'
-      slim :'/error'
+      flash.next[:comment] = Todo.flash_prepare ['Comment submission failed. Not enough permissions.']
+      redirect back
     end
   end
 

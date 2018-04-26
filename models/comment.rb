@@ -4,15 +4,22 @@ class Comment < Sequel::Model
   many_to_one :list
   many_to_one :user
 
-  def self.new_comment(list, user, content, list_is_public, list_owner)
-    return Comment.create(list_id: list.to_i, user_id: user, text: content, creation_date: Time.now) if
-      list.to_i == list_owner || list_is_public == 'public'
-    false
+  def validate
+    super
+    validates_presence [:text], message: 'Don´t leave comment area in blank'
+  end
+
+  def self.new_comment(list, user, content)
+    Comment.new(list_id: list[:list_id], user_id: user, text: content, creation_date: Time.now) if
+      User.can_interact? list, user
   end
 
   def self.delete(comment_id, user_id)
     comment = Comment.first(id: comment_id)
-    return comment.destroy if user_id == comment[:user_id] && (comment[:creation_date] + 60 * 15) >= Time.now
-    false
+    if user_id == comment[:user_id] && (comment[:creation_date] + 60 * 15) >= Time.now
+      comment.destroy
+    else
+      false
+    end
   end
 end
