@@ -38,24 +38,7 @@ class List < Sequel::Model
     list.save
 
     items.each do |item|
-      if item[:name].empty?
-        i = Item.first(id: item[:id])
-        i.destroy unless i.nil?
-      else
-        item[:starred] = false if item[:starred].nil?
-        i = Item.first(id: item[:id])
-        if i.nil?
-          Item.create(name: item[:name], description: item[:description], starred: item[:starred], list: list,
-                      due_date: item[:due_date], user: user, created_at: Time.now, updated_at: Time.now)
-        else
-          i.name = item[:name]
-          i.description = item[:description]
-          i.updated_at = Time.now
-          i.starred = item[:starred]
-          i.due_date = item[:due_date]
-          i.save
-        end
-      end
+      Item.new_item item, list, user
     end
   end
 end
