@@ -1,6 +1,6 @@
 class Todo < Sinatra::Application
   get '/?' do
-    @my_lists = List.association_join(:permissions).where(user_id: @user.id)
+    @my_lists = List.association_join(:permissions).where(user_id: @user.id, permission_level: 'read_write')
     @others_lists = List.association_join(permissions: :user).exclude(user_id: @user.id)
     @list_types = ['My Lists', 'Others Lists']
     slim :'/index'
@@ -57,7 +57,13 @@ class Todo < Sinatra::Application
   post '/permission/:id' do
     list = List.association_join(:items).where(list_id: params[:id]).first
     if User.can_edit_list? list[:list_id], params[:owner].to_i
-      Permission.update params[:user_affected], list[:list_id]
+      new_permission_result = Permission.update params[:user_affected], list[:list_id]
+      if new_permission_result.class == Permission
+        flash.next[:permission] = Todo.flash_prepare ['Permissions updated.']
+        flash.next[:positive] = 'not nil'
+      else
+        flash.next[:permission] = Todo.flash_prepare new_permission_result
+      end
       redirect '/'
     else
       @message = 'Invalid permissions'
