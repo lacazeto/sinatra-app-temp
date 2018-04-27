@@ -31,11 +31,17 @@ class Todo < Sinatra::Application
   get '/edit/:id/?' do
     @list = List.association_join(:items).where(list_id: params[:id]).first
     @list[:id] = @list[:list_id] # temporary fix
-    if !@list.nil? && (User.can_interact? @list, @user[:id])
+    if !@list.nil? && (User.can_edit_list? @list[:list_id], @user[:id])
       @time = Time.now.strftime('%F')
       @items = Item.where(list_id: params[:id]).order(Sequel.desc(:starred))
       @comments = @list.comments_dataset.eager(:user)
-      @can_edit = User.can_edit_list? @list[:list_id], @user[:id]
+      @can_edit = true
+      slim :'/edit_list'
+    elsif !@list.nil? && (User.can_interact? @list, @user[:id])
+      @time = Time.now.strftime('%F')
+      @items = Item.where(list_id: params[:id]).order(Sequel.desc(:starred))
+      @comments = @list.comments_dataset.eager(:user)
+      @can_edit = false
       slim :'/edit_list'
     else
       @message = 'This list is unavailable or doesn´t exist'
