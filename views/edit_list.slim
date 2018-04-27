@@ -116,12 +116,6 @@ css:
                 button.btn.btn-sm.btn-primary type="submit"
                   i.glyphicon.glyphicon-ok
                   span Update
-              .col-md-8.text-right
-                label for="checkbox2" style="margin-right: 5px; color: red" Make it public
-                - if @list[:shared_with] == 'public'
-                  input.check#checkbox2 type="checkbox" name="shared_with" checked=true onclick="return false"
-                - else
-                  input.check#checkbox2 type="checkbox" name="shared_with" checked=false onclick="return false"
 
   .col-8.col-md-offset-1
     == slim :'/_comments'
