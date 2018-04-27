@@ -21,7 +21,7 @@ class Todo < Sinatra::Application
   # CONNECT TO DB
   DB = Sequel.connect(YAML.safe_load(File.open('db/database.yml'))[environment.to_s])
 
-  # Do not throw exception is model cannot be saved. Just return nil
+  # Do not throw exception if model cannot be saved. Just return nil
   Sequel::Model.raise_on_save_failure = false
 
   # Sequel plugins loaded by ALL models.
