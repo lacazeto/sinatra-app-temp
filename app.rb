@@ -1,4 +1,4 @@
-require "sinatra/reloader" if development?
+require 'sinatra/reloader' if development?
 
 class Todo < Sinatra::Application
   # CONFIG APP
