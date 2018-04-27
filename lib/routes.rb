@@ -30,19 +30,21 @@ class Todo < Sinatra::Application
 
   get '/edit/:id/?' do
     @list = List.association_join(:items).where(list_id: params[:id]).first
-    @list[:id] = @list[:list_id] # temporary fix
-    if !@list.nil? && (User.can_edit_list? @list[:list_id], @user[:id])
-      @time = Time.now.strftime('%F')
-      @items = Item.where(list_id: params[:id]).order(Sequel.desc(:starred))
-      @comments = @list.comments_dataset.eager(:user)
-      @can_edit = true
-      slim :'/edit_list'
-    elsif !@list.nil? && (User.can_interact? @list, @user[:id])
-      @time = Time.now.strftime('%F')
-      @items = Item.where(list_id: params[:id]).order(Sequel.desc(:starred))
-      @comments = @list.comments_dataset.eager(:user)
-      @can_edit = false
-      slim :'/edit_list'
+    if !@list.nil?
+      @list[:id] = @list[:list_id] # temporary fix
+      if User.can_edit_list? @list[:list_id], @user[:id]
+        @time = Time.now.strftime('%F')
+        @items = Item.where(list_id: params[:id]).order(Sequel.desc(:starred))
+        @comments = @list.comments_dataset.eager(:user)
+        @can_edit = true
+        slim :'/edit_list'
+      elsif User.can_interact? @list, @user[:id]
+        @time = Time.now.strftime('%F')
+        @items = Item.where(list_id: params[:id]).order(Sequel.desc(:starred))
+        @comments = @list.comments_dataset.eager(:user)
+        @can_edit = false
+        slim :'/edit_list'
+      end
     else
       @message = 'This list is unavailable or doesn´t exist'
       slim :'/error'
